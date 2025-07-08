@@ -38,5 +38,4 @@ Thumbs.db
 tsconfig.json
 package-lock.json
 
-# README (временно игнорируем)
-README.md
+# README включен в репозиторий
