@@ -116,6 +116,9 @@ export interface TestResult {
   // === Анализ профиля ===
   /** Профиль спиральной динамики */
   profile: SpiralProfile;
+
+  /** Вторичные значимые уровни */
+  secondaryLevels: SpiralLevel[];
   
   // === Описания и рекомендации ===
   /** Описания всех уровней */
@@ -189,7 +192,16 @@ export interface ResultComparison {
   
   /** Общая тенденция развития */
   developmentTrend: 'ascending' | 'descending' | 'stable' | 'fluctuating';
-  
+
+  /** Направление развития (алиас для developmentTrend) */
+  developmentDirection: 'ascending' | 'descending' | 'stable';
+
+  /** Области для улучшения */
+  improvementAreas: string[];
+
+  /** Рекомендации по развитию */
+  recommendations: string[];
+
   /** Интерпретация изменений */
   interpretation: string[];
 }

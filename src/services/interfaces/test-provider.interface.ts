@@ -1,4 +1,4 @@
-import { SpiralTest } from '../../types/test.interface';
+import { SpiralTest, TestMetadata } from '../../types/test.interface';
 import { ValidationResult } from '../../types/validation.interface';
 
 /**
@@ -47,6 +47,13 @@ export interface ITestProvider {
    * @returns Промис с версией теста
    */
   getTestVersion(testId: string): Promise<string>;
+
+  /**
+   * Получить метаданные теста
+   * @param testId Идентификатор теста
+   * @returns Промис с метаданными теста
+   */
+  getTestMetadata(testId: string): Promise<TestMetadata>;
 }
 
 /**

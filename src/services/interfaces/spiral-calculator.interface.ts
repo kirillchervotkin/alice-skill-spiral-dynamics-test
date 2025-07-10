@@ -1,6 +1,6 @@
 import { SpiralLevel } from '../../types/spiral-levels.enum';
 import { SpiralTest } from '../../types/test.interface';
-import { UserAnswer } from '../../types/answers.interface';
+import { UserAnswer, TestAnswers } from '../../types/answers.interface';
 import { LevelScores, SpiralProfile } from '../../types/results.interface';
 
 /**
@@ -14,6 +14,13 @@ export interface ISpiralCalculator {
    * @returns Баллы по уровням
    */
   calculateLevelScores(answers: UserAnswer[], test: SpiralTest): LevelScores;
+
+  /**
+   * Рассчитать баллы по уровням (альтернативная сигнатура)
+   * @param answers Полные ответы пользователя
+   * @returns Промис с баллами по уровням
+   */
+  calculateScores(answers: TestAnswers): Promise<LevelScores>;
   
   /**
    * Определить доминирующий уровень
@@ -75,7 +82,20 @@ export interface ISpiralCalculator {
    */
   calculateReliability(scores: LevelScores, answers: UserAnswer[], test: SpiralTest): number;
 
+  /**
+   * Нормализовать баллы (альтернативное название)
+   * @param scores Исходные баллы
+   * @returns Нормализованные баллы
+   */
+  normalizeScores(scores: LevelScores): LevelScores;
 
+  /**
+   * Создать профиль спиральной динамики (альтернативное название)
+   * @param scores Баллы по уровням
+   * @param dominantLevel Доминирующий уровень
+   * @returns Профиль
+   */
+  createSpiralProfile(scores: LevelScores, dominantLevel: SpiralLevel): SpiralProfile;
 }
 
 /**

@@ -40,6 +40,13 @@ export interface ISpiralDynamicsTestService {
    * @returns Статистика ответов
    */
   getAnswerStatistics(answers: TestAnswers, test: SpiralTest): AnswerStatistics;
+
+  /**
+   * Получить статистику ответов (альтернативная сигнатура)
+   * @param answers Ответы пользователя
+   * @returns Промис со статистикой ответов
+   */
+  getStatistics(answers: TestAnswers): Promise<AnswerStatistics>;
   
   // === Расчет результатов ===
   
