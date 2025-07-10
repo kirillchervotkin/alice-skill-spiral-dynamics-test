@@ -63,25 +63,30 @@ export interface SpiralTest {
   questions: TestQuestion[];
   
   /** Метаданные теста */
-  metadata?: {
-    /** Примерное время прохождения в минутах */
-    estimatedDuration?: number;
+  metadata?: TestMetadata;
+}
 
-    /** Целевая аудитория */
-    targetAudience?: string;
+/**
+ * Метаданные теста
+ */
+export interface TestMetadata {
+  /** Примерное время прохождения в минутах */
+  estimatedDuration?: number;
 
-    /** Язык теста */
-    language?: string;
+  /** Целевая аудитория */
+  targetAudience?: string;
 
-    /** Дата создания */
-    createdAt?: string;
+  /** Язык теста */
+  language?: string;
 
-    /** Дата последнего обновления */
-    updatedAt?: string;
+  /** Дата создания */
+  createdAt?: string;
 
-    /** Инструкции для прохождения теста */
-    instructions?: string;
-  };
+  /** Дата последнего обновления */
+  updatedAt?: string;
+
+  /** Инструкции для прохождения теста */
+  instructions?: string;
 }
 
 /**

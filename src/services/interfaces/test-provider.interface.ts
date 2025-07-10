@@ -31,6 +31,8 @@ export interface ITestProvider {
    * @returns Результат валидации
    */
   validateTest(test: SpiralTest): ValidationResult;
+
+
   
   /**
    * Проверить существование теста

@@ -84,6 +84,8 @@ export interface ISpiralDynamicsTestService {
    * @returns Сравнение результатов
    */
   compareResults(previousResult: TestResult, currentResult: TestResult): ResultComparison;
+
+
   
   // === Рекомендации ===
   

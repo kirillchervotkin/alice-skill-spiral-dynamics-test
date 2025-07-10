@@ -47,6 +47,15 @@ export interface LevelDescription {
   
   /** Потенциальные слабости */
   weaknesses?: string[];
+
+  /** Вызовы и трудности */
+  challenges?: string[];
+
+  /** Ключевые слова */
+  keywords?: string[];
+
+  /** Примеры */
+  examples?: string[];
   
   /** Как взаимодействовать с людьми этого уровня */
   interactionTips?: string[];
@@ -138,12 +147,18 @@ export interface TestResult {
   metadata?: {
     /** Время прохождения теста */
     testDuration?: number;
-    
+
     /** Средняя скорость ответов */
     averageResponseTime?: number;
-    
+
     /** Распределение по категориям вопросов */
     categoryBreakdown?: Record<string, LevelScores>;
+
+    /** Время расчета результата */
+    calculatedAt?: Date;
+
+    /** Версия системы */
+    version?: string;
   };
 }
 
@@ -162,7 +177,7 @@ export interface ResultComparison {
     from: SpiralLevel;
     to: SpiralLevel;
     changed: boolean;
-  };
+  } | 'stable' | 'ascending' | 'descending';
   
   /** Изменения в баллах */
   scoreChanges: Record<SpiralLevel, {

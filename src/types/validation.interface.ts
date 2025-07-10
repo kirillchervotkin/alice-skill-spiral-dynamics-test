@@ -87,7 +87,22 @@ export interface ValidationResult {
   
   /** Общий счет качества (0-1) */
   qualityScore?: number;
+
+  /** Общий счет валидации (алиас для qualityScore) */
+  score?: number;
   
+  /** Детали валидации */
+  details?: {
+    /** Полнота данных */
+    completeness: number;
+
+    /** Согласованность */
+    consistency: number;
+
+    /** Качество */
+    quality: number;
+  };
+
   /** Сводка валидации */
   summary?: {
     /** Общее количество проверок */
@@ -142,6 +157,12 @@ export interface ValidationRule {
   
   /** Функция проверки */
   validator: (data: any, context?: any) => ValidationError | null;
+
+  /** Функция проверки (алиас для validator) */
+  check?: (data: any) => boolean;
+
+  /** Сообщение об ошибке */
+  errorMessage?: string;
   
   /** Применимость правила */
   applicableFor: string[];

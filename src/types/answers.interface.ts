@@ -80,4 +80,13 @@ export interface AnswerStatistics {
   
   /** Распределение ответов по категориям вопросов */
   categoryDistribution?: Record<string, number>;
+
+  /** Паттерн ответов */
+  responsePattern?: Record<string, any>;
+
+  /** Метрики качества */
+  qualityMetrics?: {
+    consistency: number;
+    reliability: number;
+  };
 }

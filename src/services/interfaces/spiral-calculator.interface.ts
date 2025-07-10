@@ -30,6 +30,8 @@ export interface ISpiralCalculator {
    * @returns Уверенность (0-1)
    */
   calculateConfidence(scores: LevelScores, answers: UserAnswer[], test: SpiralTest): number;
+
+
   
   /**
    * Рассчитать согласованность ответов
@@ -38,6 +40,8 @@ export interface ISpiralCalculator {
    * @returns Согласованность (0-1)
    */
   calculateConsistency(answers: UserAnswer[], test: SpiralTest): number;
+
+
   
   /**
    * Получить вторичные значимые уровни
@@ -70,6 +74,8 @@ export interface ISpiralCalculator {
    * @returns Надежность (0-1)
    */
   calculateReliability(scores: LevelScores, answers: UserAnswer[], test: SpiralTest): number;
+
+
 }
 
 /**
