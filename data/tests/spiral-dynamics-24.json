@@ -1,0 +1,281 @@
+{
+  "id": "spiral-dynamics-24",
+  "name": "Тест ценностей \"Спиральная динамика\"",
+  "description": "Определи свой ведущий на данный момент уровень ценностей по модели Спиральной динамики. 24 вопроса, быстрая диагностика.",
+  "version": "1.0.0",
+  "author": "Адаптация теста Грейвза",
+  "metadata": {
+    "estimatedDuration": 5,
+    "targetAudience": "Взрослые от 18 лет",
+    "language": "ru",
+    "createdAt": "2024-01-01",
+    "updatedAt": "2024-01-01",
+    "instructions": "Ответь на 24 утверждения: Да (согласен), Нет (не согласен) или Не уверен (нейтрален). Отвечай интуитивно, первое, что приходит в голову."
+  },
+  "questions": [
+    {
+      "id": "q1",
+      "text": "Традиции и ритуалы предков защищают и придают смысл. Согласен?",
+      "category": "purple",
+      "levelTarget": "purple",
+      "options": [
+        {"id": "q1_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 2, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q1_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q1_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 1, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q2",
+      "text": "Сильный человек берет то, что хочет, не глядя на слабых. Это про тебя?",
+      "category": "red",
+      "levelTarget": "red",
+      "options": [
+        {"id": "q2_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 0, "red": 2, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q2_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q2_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 0, "red": 1, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q3",
+      "text": "Четкие правила и авторитеты нужны для порядка. Да?",
+      "category": "blue",
+      "levelTarget": "blue",
+      "options": [
+        {"id": "q3_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 2, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q3_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q3_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 1, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q4",
+      "text": "Успех — это деньги, статус, личные достижения. Так ли это?",
+      "category": "orange",
+      "levelTarget": "orange",
+      "options": [
+        {"id": "q4_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 2, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q4_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q4_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 1, "green": 0, "yellow": 0, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q5",
+      "text": "Гармония в отношениях важнее личного успеха. Да?",
+      "category": "green",
+      "levelTarget": "green",
+      "options": [
+        {"id": "q5_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 2, "yellow": 0, "turquoise": 0}},
+        {"id": "q5_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q5_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 1, "yellow": 0, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q6",
+      "text": "Ключ к проблемам — гибкость и практичные решения. Да?",
+      "category": "yellow",
+      "levelTarget": "yellow",
+      "options": [
+        {"id": "q6_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 2, "turquoise": 0}},
+        {"id": "q6_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q6_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 1, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q7",
+      "text": "Все в мире связано, решения должны быть глобальными. Согласен?",
+      "category": "turquoise",
+      "levelTarget": "turquoise",
+      "options": [
+        {"id": "q7_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 2}},
+        {"id": "q7_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q7_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 1}}
+      ]
+    },
+    {
+      "id": "q8",
+      "text": "Действуешь по ситуации, без долгих планов?",
+      "category": "beige",
+      "levelTarget": "beige",
+      "options": [
+        {"id": "q8_yes", "text": "Да", "levelWeights": {"beige": 2, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q8_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q8_neutral", "text": "Не уверен", "levelWeights": {"beige": 1, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q9",
+      "text": "Высшие силы или духи влияют на твою жизнь?",
+      "category": "purple",
+      "levelTarget": "purple",
+      "options": [
+        {"id": "q9_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 2, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q9_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q9_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 1, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q10",
+      "text": "Чтобы добиться своего, иногда надо идти по головам?",
+      "category": "red",
+      "levelTarget": "red",
+      "options": [
+        {"id": "q10_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 0, "red": 2, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q10_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q10_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 0, "red": 1, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q11",
+      "text": "Поведение должно определяться долгом и моралью?",
+      "category": "blue",
+      "levelTarget": "blue",
+      "options": [
+        {"id": "q11_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 2, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q11_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q11_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 1, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q12",
+      "text": "Прогресс двигают инновации и конкуренция?",
+      "category": "orange",
+      "levelTarget": "orange",
+      "options": [
+        {"id": "q12_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 2, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q12_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q12_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 1, "green": 0, "yellow": 0, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q13",
+      "text": "Справедливость — это равенство и уважение ко всем?",
+      "category": "green",
+      "levelTarget": "green",
+      "options": [
+        {"id": "q13_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 2, "yellow": 0, "turquoise": 0}},
+        {"id": "q13_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q13_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 1, "yellow": 0, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q14",
+      "text": "Истина зависит от контекста, нет абсолютов?",
+      "category": "yellow",
+      "levelTarget": "yellow",
+      "options": [
+        {"id": "q14_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 2, "turquoise": 0}},
+        {"id": "q14_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q14_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 1, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q15",
+      "text": "Человечество — часть экосистемы, нужно с ней жить в гармонии?",
+      "category": "turquoise",
+      "levelTarget": "turquoise",
+      "options": [
+        {"id": "q15_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 2}},
+        {"id": "q15_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q15_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 1}}
+      ]
+    },
+    {
+      "id": "q16",
+      "text": "Решаешь \"здесь и сейчас\", планы не важны?",
+      "category": "beige",
+      "levelTarget": "beige",
+      "options": [
+        {"id": "q16_yes", "text": "Да", "levelWeights": {"beige": 2, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q16_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q16_neutral", "text": "Не уверен", "levelWeights": {"beige": 1, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q17",
+      "text": "Мистика или связь с предками помогают в трудностях?",
+      "category": "purple",
+      "levelTarget": "purple",
+      "options": [
+        {"id": "q17_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 2, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q17_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q17_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 1, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q18",
+      "text": "Уважение заслуживают только сильные и властные?",
+      "category": "red",
+      "levelTarget": "red",
+      "options": [
+        {"id": "q18_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 0, "red": 2, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q18_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q18_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 0, "red": 1, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q19",
+      "text": "Обществу нужна строгая иерархия для порядка?",
+      "category": "blue",
+      "levelTarget": "blue",
+      "options": [
+        {"id": "q19_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 2, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q19_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q19_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 1, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q20",
+      "text": "Личная свобода и рост важнее традиций?",
+      "category": "orange",
+      "levelTarget": "orange",
+      "options": [
+        {"id": "q20_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 2, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q20_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q20_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 1, "green": 0, "yellow": 0, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q21",
+      "text": "Лучшие решения принимаются сообща, по согласию?",
+      "category": "green",
+      "levelTarget": "green",
+      "options": [
+        {"id": "q21_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 2, "yellow": 0, "turquoise": 0}},
+        {"id": "q21_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q21_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 1, "yellow": 0, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q22",
+      "text": "Мудрость — в понимании сложных систем?",
+      "category": "yellow",
+      "levelTarget": "yellow",
+      "options": [
+        {"id": "q22_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 2, "turquoise": 0}},
+        {"id": "q22_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q22_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 1, "turquoise": 0}}
+      ]
+    },
+    {
+      "id": "q23",
+      "text": "Глобальные кризисы требуют единства человечества?",
+      "category": "turquoise",
+      "levelTarget": "turquoise",
+      "options": [
+        {"id": "q23_yes", "text": "Да", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 2}},
+        {"id": "q23_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q23_neutral", "text": "Не уверен", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 1}}
+      ]
+    },
+    {
+      "id": "q24",
+      "text": "Выживание и безопасность — главные приоритеты?",
+      "category": "beige",
+      "levelTarget": "beige",
+      "options": [
+        {"id": "q24_yes", "text": "Да", "levelWeights": {"beige": 2, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q24_no", "text": "Нет", "levelWeights": {"beige": 0, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}},
+        {"id": "q24_neutral", "text": "Не уверен", "levelWeights": {"beige": 1, "purple": 0, "red": 0, "blue": 0, "orange": 0, "green": 0, "yellow": 0, "turquoise": 0}}
+      ]
+    }
+  ]
+}

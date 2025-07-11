@@ -1,0 +1,322 @@
+{
+  "id": "graves-standard",
+  "name": "Тест ценностей \"Спиральная динамика\"",
+  "description": "Определи свой ведущий на данный момент уровень ценностей по модели Спиральной динамики. 24 вопроса, быстрая диагностика.",
+  "version": "1.0.0",
+  "author": "Адаптация теста Грейвза",
+  "metadata": {
+    "estimatedDuration": 5,
+    "targetAudience": "Взрослые от 18 лет",
+    "language": "ru",
+    "createdAt": "2024-01-01",
+    "updatedAt": "2024-01-01"
+  },
+  "questions": [
+    {
+      "id": "q1",
+      "text": "Главный приоритет — это физическая безопасность, еда, кров, здоровье. Твое?",
+      "category": "beige",
+      "weight": 1.0,
+      "options": [
+        {
+          "id": "q1_yes",
+          "text": "Да",
+          "levelWeights": {
+            "beige": 2,
+            "purple": 0,
+            "red": 0,
+            "blue": 0,
+            "orange": 0,
+            "green": 0,
+            "yellow": 0,
+            "turquoise": 0
+          }
+        },
+        {
+          "id": "q1_no",
+          "text": "Нет",
+          "levelWeights": {
+            "beige": 0,
+            "purple": 0,
+            "red": 0,
+            "blue": 0,
+            "orange": 0,
+            "green": 0,
+            "yellow": 0,
+            "turquoise": 0
+          }
+        },
+        {
+          "id": "q1_neutral",
+          "text": "Не уверен",
+          "levelWeights": {
+            "beige": 1,
+            "purple": 0,
+            "red": 0,
+            "blue": 0,
+            "orange": 0,
+            "green": 0,
+            "yellow": 0,
+            "turquoise": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "q2",
+      "text": "Как вы принимаете важные решения?",
+      "category": "behavior",
+      "weight": 1.0,
+      "options": [
+        {
+          "id": "q2_a",
+          "text": "Следую установленным правилам и процедурам",
+          "levelWeights": {
+            "beige": 0.1,
+            "purple": 0.3,
+            "red": 0.0,
+            "blue": 0.9,
+            "orange": 0.2,
+            "green": 0.1,
+            "yellow": 0.1,
+            "turquoise": 0.0
+          }
+        },
+        {
+          "id": "q2_b",
+          "text": "Полагаюсь на интуицию и опыт",
+          "levelWeights": {
+            "beige": 0.3,
+            "purple": 0.7,
+            "red": 0.5,
+            "blue": 0.1,
+            "orange": 0.3,
+            "green": 0.4,
+            "yellow": 0.2,
+            "turquoise": 0.3
+          }
+        },
+        {
+          "id": "q2_c",
+          "text": "Анализирую данные и факты",
+          "levelWeights": {
+            "beige": 0.0,
+            "purple": 0.0,
+            "red": 0.1,
+            "blue": 0.4,
+            "orange": 0.8,
+            "green": 0.2,
+            "yellow": 0.7,
+            "turquoise": 0.5
+          }
+        },
+        {
+          "id": "q2_d",
+          "text": "Советуюсь с командой и ищу консенсус",
+          "levelWeights": {
+            "beige": 0.0,
+            "purple": 0.2,
+            "red": 0.0,
+            "blue": 0.1,
+            "orange": 0.1,
+            "green": 0.8,
+            "yellow": 0.4,
+            "turquoise": 0.6
+          }
+        }
+      ]
+    },
+    {
+      "id": "q3",
+      "text": "Что вас больше всего мотивирует?",
+      "category": "motivation",
+      "weight": 1.0,
+      "options": [
+        {
+          "id": "q3_a",
+          "text": "Безопасность и выживание",
+          "levelWeights": {
+            "beige": 0.9,
+            "purple": 0.4,
+            "red": 0.2,
+            "blue": 0.3,
+            "orange": 0.1,
+            "green": 0.1,
+            "yellow": 0.0,
+            "turquoise": 0.0
+          }
+        },
+        {
+          "id": "q3_b",
+          "text": "Принадлежность к группе",
+          "levelWeights": {
+            "beige": 0.2,
+            "purple": 0.8,
+            "red": 0.1,
+            "blue": 0.4,
+            "orange": 0.1,
+            "green": 0.5,
+            "yellow": 0.1,
+            "turquoise": 0.2
+          }
+        },
+        {
+          "id": "q3_c",
+          "text": "Власть и контроль",
+          "levelWeights": {
+            "beige": 0.1,
+            "purple": 0.2,
+            "red": 0.9,
+            "blue": 0.3,
+            "orange": 0.6,
+            "green": 0.0,
+            "yellow": 0.1,
+            "turquoise": 0.0
+          }
+        },
+        {
+          "id": "q3_d",
+          "text": "Смысл и цель жизни",
+          "levelWeights": {
+            "beige": 0.0,
+            "purple": 0.3,
+            "red": 0.1,
+            "blue": 0.8,
+            "orange": 0.2,
+            "green": 0.6,
+            "yellow": 0.5,
+            "turquoise": 0.7
+          }
+        }
+      ]
+    },
+    {
+      "id": "q4",
+      "text": "Как вы относитесь к изменениям?",
+      "category": "behavior",
+      "weight": 1.0,
+      "options": [
+        {
+          "id": "q4_a",
+          "text": "Избегаю их, предпочитаю стабильность",
+          "levelWeights": {
+            "beige": 0.6,
+            "purple": 0.7,
+            "red": 0.2,
+            "blue": 0.6,
+            "orange": 0.1,
+            "green": 0.2,
+            "yellow": 0.0,
+            "turquoise": 0.0
+          }
+        },
+        {
+          "id": "q4_b",
+          "text": "Принимаю, если они выгодны",
+          "levelWeights": {
+            "beige": 0.3,
+            "purple": 0.2,
+            "red": 0.6,
+            "blue": 0.2,
+            "orange": 0.8,
+            "green": 0.3,
+            "yellow": 0.4,
+            "turquoise": 0.2
+          }
+        },
+        {
+          "id": "q4_c",
+          "text": "Приветствую, если они помогают людям",
+          "levelWeights": {
+            "beige": 0.0,
+            "purple": 0.1,
+            "red": 0.0,
+            "blue": 0.3,
+            "orange": 0.2,
+            "green": 0.8,
+            "yellow": 0.5,
+            "turquoise": 0.6
+          }
+        },
+        {
+          "id": "q4_d",
+          "text": "Рассматриваю как естественную часть эволюции",
+          "levelWeights": {
+            "beige": 0.0,
+            "purple": 0.0,
+            "red": 0.1,
+            "blue": 0.1,
+            "orange": 0.3,
+            "green": 0.2,
+            "yellow": 0.9,
+            "turquoise": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "id": "q5",
+      "text": "Какой стиль управления вы предпочитаете?",
+      "category": "leadership",
+      "weight": 1.0,
+      "options": [
+        {
+          "id": "q5_a",
+          "text": "Авторитарный с четкой иерархией",
+          "levelWeights": {
+            "beige": 0.2,
+            "purple": 0.5,
+            "red": 0.7,
+            "blue": 0.8,
+            "orange": 0.4,
+            "green": 0.0,
+            "yellow": 0.1,
+            "turquoise": 0.0
+          }
+        },
+        {
+          "id": "q5_b",
+          "text": "Результат-ориентированный",
+          "levelWeights": {
+            "beige": 0.1,
+            "purple": 0.1,
+            "red": 0.6,
+            "blue": 0.3,
+            "orange": 0.9,
+            "green": 0.2,
+            "yellow": 0.4,
+            "turquoise": 0.2
+          }
+        },
+        {
+          "id": "q5_c",
+          "text": "Демократический и участвующий",
+          "levelWeights": {
+            "beige": 0.0,
+            "purple": 0.2,
+            "red": 0.0,
+            "blue": 0.2,
+            "orange": 0.3,
+            "green": 0.9,
+            "yellow": 0.5,
+            "turquoise": 0.4
+          }
+        },
+        {
+          "id": "q5_d",
+          "text": "Адаптивный и гибкий",
+          "levelWeights": {
+            "beige": 0.0,
+            "purple": 0.0,
+            "red": 0.2,
+            "blue": 0.1,
+            "orange": 0.4,
+            "green": 0.3,
+            "yellow": 0.8,
+            "turquoise": 0.7
+          }
+        }
+      ]
+    }
+  ]
+}

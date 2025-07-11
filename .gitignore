@@ -1,41 +1,58 @@
-# Зависимости
+# Dependencies
 node_modules/
-
-# Скомпилированный код
-dist/
-
-# Реализации сервисов (оставляем только интерфейсы)
-src/services/*.service.ts
-src/index.ts
-
-# Примеры использования
-examples/
-
-# Тестовые данные
-data/
-
-# Логи
-*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Временные файлы
-.tmp/
-.cache/
+# Build output
+dist/
+build/
 
-# IDE файлы
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+*.log
+logs/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
-# OS файлы
+# OS files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 
-# Конфигурационные файлы (кроме базовых)
-tsconfig.json
-package-lock.json
+# Temporary files
+.tmp/
+.cache/
+*.tmp
+*.temp
 
-# README включен в репозиторий
+# Test frontend (local testing only)
+test-frontend.html
+
+# Local development files
+*.local
