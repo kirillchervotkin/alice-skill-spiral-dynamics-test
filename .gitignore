@@ -4,16 +4,6 @@ node_modules/
 # Скомпилированный код
 dist/
 
-# Реализации сервисов (оставляем только интерфейсы)
-src/services/*.service.ts
-src/index.ts
-
-# Примеры использования
-examples/
-
-# Тестовые данные
-data/
-
 # Логи
 *.log
 npm-debug.log*
@@ -34,8 +24,10 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
-# Конфигурационные файлы (кроме базовых)
-tsconfig.json
-package-lock.json
+# Переменные окружения
+.env
+.env.local
+.env.production
 
-# README включен в репозиторий
+# Coverage отчеты
+coverage/
