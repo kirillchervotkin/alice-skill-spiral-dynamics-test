@@ -118,7 +118,7 @@ describe('AliceController (Cards Tests)', () => {
 
     it('should return default image for unknown level', () => {
       const imageId = (controller as any).getLevelImageId('unknown');
-      expect(imageId).toBe('1540737/default-level');
+      expect(imageId).toBe('DEFAULT_IMAGE_ID');
     });
 
     it('should maintain backward compatibility without cards', () => {
