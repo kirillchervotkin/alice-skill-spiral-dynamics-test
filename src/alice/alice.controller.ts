@@ -56,20 +56,49 @@ export class AliceController {
 
   // Согласие начать тест
   @Intent('spiral.yes')
-  @Intent('spiral.start_test')
-  agreeToStart(): AliceResponse {
+  @Intent('YANDEX.CONFIRM')
+  agreeToStart(@Data() data: SessionData): AliceResponse {
+    const { state } = data || {};
+
+    // Если в состоянии приветствия - начинаем тест
+    if (!state || state === 'welcome') {
+      return this.startFirstQuestion();
+    }
+
+    // Если в состоянии тестирования - обрабатываем как ответ "да"
+    if (state === 'testing') {
+      return this.processAnswerWithScore(data, 2);
+    }
+
+    // По умолчанию начинаем тест
     return this.startFirstQuestion();
   }
 
   // Отказ от теста
   @Intent('spiral.no')
-  exit(): AliceResponse {
+  @Intent('YANDEX.REJECT')
+  exit(@Data() data: SessionData): AliceResponse {
+    const { state } = data || {};
+
+    // Если в состоянии приветствия - выходим
+    if (!state || state === 'welcome') {
+      return new SkillResponseBuilder('Всегда рада помочь. Обращайтесь!')
+        .setEndSession()
+        .build();
+    }
+
+    // Если в состоянии тестирования - обрабатываем как ответ "нет"
+    if (state === 'testing') {
+      return this.processAnswerWithScore(data, 0);
+    }
+
+    // По умолчанию выходим
     return new SkillResponseBuilder('Всегда рада помочь. Обращайтесь!')
       .setEndSession()
       .build();
   }
 
-  // Ответы на вопросы
+  // Ответы на вопросы (дублирующие интенты для надежности)
   @Intent('spiral.answer.yes')
   answerYes(@Data() data: SessionData): AliceResponse {
     return this.processAnswerWithScore(data, 2);
