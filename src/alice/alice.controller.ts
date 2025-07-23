@@ -429,20 +429,31 @@ export class AliceController {
 
   /**
    * Возвращает ID изображения для уровня спиральной динамики
+   *
+   * ИНСТРУКЦИЯ ПО НАСТРОЙКЕ:
+   * 1. Загрузите изображения из папки assets/images/ в консоль Яндекс.Диалогов
+   * 2. Скопируйте полученные image_id для каждого файла:
+   *    - beige_16.9.png → замените 'BEIGE_IMAGE_ID'
+   *    - purple_16.9.png → замените 'PURPLE_IMAGE_ID'
+   *    - red_16.9.png → замените 'RED_IMAGE_ID'
+   *    - blue_16.9.png → замените 'BLUE_IMAGE_ID'
+   *    - orange_16.9.png → замените 'ORANGE_IMAGE_ID'
+   *    - green_16.9.png → замените 'GREEN_IMAGE_ID'
+   *    - yellow_16.9.png → замените 'YELLOW_IMAGE_ID'
+   *    - turquoise_16.9.png → замените 'TURQUOISE_IMAGE_ID'
    */
   private getLevelImageId(level: string): string {
-    // Здесь должны быть реальные ID изображений, загруженных в Яндекс.Диалоги
     const imageMap: Record<string, string> = {
-      'beige': '1540737/beige-level',
-      'purple': '1540737/purple-level',
-      'red': '1540737/red-level',
-      'blue': '1540737/blue-level',
-      'orange': '1540737/orange-level',
-      'green': '1540737/green-level',
-      'yellow': '1540737/yellow-level',
-      'turquoise': '1540737/turquoise-level'
+      'beige': 'BEIGE_IMAGE_ID',        // Замените на реальный ID из Яндекс.Диалогов
+      'purple': 'PURPLE_IMAGE_ID',      // Замените на реальный ID из Яндекс.Диалогов
+      'red': 'RED_IMAGE_ID',            // Замените на реальный ID из Яндекс.Диалогов
+      'blue': 'BLUE_IMAGE_ID',          // Замените на реальный ID из Яндекс.Диалогов
+      'orange': 'ORANGE_IMAGE_ID',      // Замените на реальный ID из Яндекс.Диалогов
+      'green': 'GREEN_IMAGE_ID',        // Замените на реальный ID из Яндекс.Диалогов
+      'yellow': 'YELLOW_IMAGE_ID',      // Замените на реальный ID из Яндекс.Диалогов
+      'turquoise': 'TURQUOISE_IMAGE_ID' // Замените на реальный ID из Яндекс.Диалогов
     };
 
-    return imageMap[level] || '1540737/default-level';
+    return imageMap[level] || 'DEFAULT_IMAGE_ID';
   }
 }
