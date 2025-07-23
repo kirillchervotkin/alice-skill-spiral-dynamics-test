@@ -31,3 +31,22 @@ Thumbs.db
 
 # Coverage отчеты
 coverage/
+
+# Файлы для разработки и тестирования (НЕ нужны для Алисы)
+test-*.js
+*-test.js
+debug-*.js
+simple-test.js
+show-cards-structure.js
+*-request.json
+test-requests.json
+*.ps1
+image-templates.html
+cards-preview.html
+generate-square-images.html
+example-*.json
+CARDS_*.md
+IMAGES_SETUP.md
+ALICE_INTENTS_FULL.md
+.env.example
+Procfile
