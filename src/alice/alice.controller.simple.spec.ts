@@ -39,16 +39,16 @@ describe('AliceController (Simple Tests)', () => {
     });
 
     it('should handle agreement to start', () => {
-      const response = controller.agreeToStart();
-      
+      const response = controller.agreeToStart({ state: 'welcome' });
+
       expect(response).toBeDefined();
       expect(response.response.text).toContain('Отлично! Начнём!');
       expect(response.response.text).toContain('Вопрос 1 из 24');
     });
 
     it('should handle refusal', () => {
-      const response = controller.exit();
-      
+      const response = controller.exit({ state: 'welcome' });
+
       expect(response).toBeDefined();
       expect(response.response.text).toBe('Всегда рада помочь. Обращайтесь!');
       expect(response.response.end_session).toBe(true);
