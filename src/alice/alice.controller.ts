@@ -101,6 +101,7 @@ export class AliceController {
     const sessionData = data?.state?.session?.data || data || {};
     const { state, currentQuestion } = sessionData;
     console.log(`Answer YES: sessionData=`, sessionData);
+    console.log(`Answer YES: state=${state}, currentQuestion=${currentQuestion}, hasAnswers=${!!sessionData.answers}`);
 
     // Если в состоянии приветствия, переадресуем на согласие начать тест
     if (state === 'welcome') {
@@ -131,6 +132,7 @@ export class AliceController {
     const sessionData = data?.state?.session?.data || data || {};
     const { state, currentQuestion } = sessionData;
     console.log(`Answer NO: sessionData=`, sessionData);
+    console.log(`Answer NO: state=${state}, currentQuestion=${currentQuestion}, hasAnswers=${!!sessionData.answers}`);
 
     // Если в состоянии приветствия, переадресуем на отказ от теста
     if (state === 'welcome') {
