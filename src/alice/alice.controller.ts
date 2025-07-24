@@ -331,6 +331,7 @@ export class AliceController {
 
   // Описание уровня
   @Intent('spiral.describe')
+  @Intent('spiral.details') // Добавляем интент для кнопки "Подробнее"
   describeLevel(@Data() data: any): AliceResponse {
     console.log(`⏱️ DESCRIBE START`);
     console.log(`📊 Full request data:`, JSON.stringify(data, null, 2));
@@ -363,8 +364,7 @@ export class AliceController {
       // .setCard(levelCard) // Временно отключено
       .setButtons([
         { title: "Повтори результаты", hide: false },
-        { title: "Заново", hide: false },
-        { title: "Отправить", hide: false }
+        { title: "Заново", hide: false }
       ])
       .setData(sessionData)
       .build();
@@ -388,9 +388,8 @@ export class AliceController {
 
     return new SkillResponseBuilder(voiceText)
       .setButtons([
-        { title: `Опиши ${results.top3[0].name}`, hide: false },
-        { title: "Заново", hide: false },
-        { title: "Отправить", hide: false }
+        { title: "Подробнее", hide: false },
+        { title: "Заново", hide: false }
       ])
       .setData(sessionData)
       .build();
@@ -572,9 +571,8 @@ export class AliceController {
     )
       // .setCard(resultsCard) // Временно отключено
       .setButtons([
-        { title: `Опиши ${results.top3[0].name}`, hide: false },
+        { title: "Подробнее", hide: false },
         { title: "Повтори результаты", hide: false },
-        { title: "Отправить", hide: false },
         { title: "Заново", hide: false },
         { title: "Выход", hide: false }
       ])
