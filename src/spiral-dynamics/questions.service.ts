@@ -11,7 +11,7 @@ export interface SimpleQuestion {
 export class QuestionsService {
   private readonly questions: SimpleQuestion[] = [
     // Бежевый (Выживание) - вопросы 1, 9, 17
-    { id: 1, text: "Главный приоритет — это физическая безопасность, еда, кров, здоровье. Твое?", level: SpiralLevel.BEIGE },
+    { id: 1, text: "Главный приоритет — это физическая безопасность, еда, кров, здоровье. Согласен?", level: SpiralLevel.BEIGE },
     { id: 9, text: "Действуешь по ситуации, без долгих планов?", level: SpiralLevel.BEIGE },
     { id: 17, text: "Решаешь здесь и сейчас, планы не важны?", level: SpiralLevel.BEIGE },
 
@@ -31,7 +31,7 @@ export class QuestionsService {
     { id: 20, text: "Обществу нужна строгая иерархия для порядка?", level: SpiralLevel.BLUE },
 
     // Оранжевый (Успех/Конкуренция) - вопросы 5, 13, 21
-    { id: 5, text: "Стремишься к личным достижениям и успеху?", level: SpiralLevel.ORANGE },
+    { id: 5, text: "Успех — это деньги, статус, личные достижения. Так ли это?", level: SpiralLevel.ORANGE },
     { id: 13, text: "Прогресс двигают инновации и конкуренция?", level: SpiralLevel.ORANGE },
     { id: 21, text: "Личная свобода и рост важнее традиций?", level: SpiralLevel.ORANGE },
 
@@ -42,7 +42,7 @@ export class QuestionsService {
 
     // Желтый (Гибкость/Система) - вопросы 7, 15, 23
     { id: 7, text: "Ключ к проблемам — гибкость и практичные решения. Да?", level: SpiralLevel.YELLOW },
-    { id: 15, text: "Предпочитаешь гибкий подход вместо жестких правил?", level: SpiralLevel.YELLOW },
+    { id: 15, text: "Истина зависит от контекста, нет абсолютов?", level: SpiralLevel.YELLOW },
     { id: 23, text: "Мудрость — в понимании сложных систем?", level: SpiralLevel.YELLOW },
 
     // Бирюзовый (Глобальность) - вопросы 8, 16, 24
