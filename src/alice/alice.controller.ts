@@ -28,7 +28,8 @@ export class AliceController {
 
   // Базовый обработчик для всех запросов (когда интент не определен)
   @Intent()
-  defaultHandler(): AliceResponse {
+  defaultHandler(@Data() data: any): AliceResponse {
+    console.log(`DEFAULT HANDLER: data=`, JSON.stringify(data, null, 2));
     return this.startWelcome();
   }
 
@@ -55,21 +56,28 @@ export class AliceController {
   }
 
   // Согласие начать тест (только в приветствии)
-  @Intent('spiral.yes')
   @Intent('YANDEX.CONFIRM')
+  @Intent('spiral.yes')
   agreeToStart(@Data() data: any): AliceResponse {
+    console.log(`🎯 AGREE TO START CALLED`);
+    console.log(`📊 Full request data:`, JSON.stringify(data, null, 2));
+    
     // Данные приходят в state.session.data согласно документации Яндекс.Диалогов
     const sessionData = data?.state?.session?.data || {};
     const { state } = sessionData;
 
-    console.log(`Agree to start: sessionData=`, sessionData);
+    console.log(`📋 Session data:`, sessionData);
+    console.log(`🔄 Current state:`, state);
 
-    // Только в состоянии приветствия начинаем тест
+    // Если состояние не определено или welcome - начинаем тест
+    // Это покрывает случай пустых данных сессии от Яндекс.Диалогов
     if (!state || state === 'welcome') {
+      console.log(`✅ Starting first question`);
       return this.startFirstQuestion();
     }
 
-    // В других состояниях переадресуем на обработку ответов
+    // В других состояниях это ошибка
+    console.log(`❌ Wrong state for agreement: ${state}`);
     return this.handleError(sessionData);
   }
 
@@ -81,7 +89,8 @@ export class AliceController {
     const sessionData = data?.state?.session?.data || {};
     const { state } = sessionData;
 
-    console.log(`Exit: sessionData=`, sessionData);
+    console.log(`EXIT (spiral.no): sessionData=`, sessionData);
+    console.log(`EXIT: full data=`, JSON.stringify(data, null, 2));
 
     // Только в состоянии приветствия выходим
     if (!state || state === 'welcome') {
@@ -97,11 +106,14 @@ export class AliceController {
   // Ответы на вопросы теста
   @Intent('spiral.answer.yes')
   answerYes(@Data() data: any): AliceResponse {
+    const startTime = Date.now();
+    console.log(`⏱️ ANSWER YES START: ${startTime}`);
+    
     // Данные приходят в state.session.data согласно документации Яндекс.Диалогов
     const sessionData = data?.state?.session?.data || data || {};
     const { state, currentQuestion } = sessionData;
     console.log(`Answer YES: sessionData=`, sessionData);
-    console.log(`Answer YES: state=${state}, currentQuestion=${currentQuestion}, hasAnswers=${!!sessionData.answers}`);
+    console.log(`Answer YES: state=${state}, currentQuestion=${currentQuestion}, answers=${sessionData.answers}`);
 
     // Если в состоянии приветствия, переадресуем на согласие начать тест
     if (state === 'welcome') {
@@ -120,9 +132,13 @@ export class AliceController {
 
     // Если данные полностью пустые (первый запуск), считаем это согласием начать тест
     if (!state && !sessionData.currentQuestion && !sessionData.answers) {
+      const endTime = Date.now();
+      console.log(`⏱️ ANSWER YES END (agreeToStart): ${endTime}, duration: ${endTime - startTime}ms`);
       return this.agreeToStart(data);
     }
 
+    const endTime = Date.now();
+    console.log(`⏱️ ANSWER YES END (handleError): ${endTime}, duration: ${endTime - startTime}ms`);
     return this.handleError(sessionData);
   }
 
@@ -132,7 +148,7 @@ export class AliceController {
     const sessionData = data?.state?.session?.data || data || {};
     const { state, currentQuestion } = sessionData;
     console.log(`Answer NO: sessionData=`, sessionData);
-    console.log(`Answer NO: state=${state}, currentQuestion=${currentQuestion}, hasAnswers=${!!sessionData.answers}`);
+    console.log(`Answer NO: state=${state}, currentQuestion=${currentQuestion}, answers=${sessionData.answers}`);
 
     // Если в состоянии приветствия, переадресуем на отказ от теста
     if (state === 'welcome') {
