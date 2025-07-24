@@ -348,7 +348,7 @@ export class AliceController {
 
     // Создаем карточку с большим изображением для описания уровня
     const levelCard = BigImageCardBuilder.create()
-      .setImageId(this.getLevelImageId(topLevel.level))
+      // .setImageId(this.getLevelImageId(topLevel.level)) // Временно отключено до загрузки изображений
       .setTitle(`${topLevel.fullName}`)
       .setDescription(`${description}\n\nВаш результат: ${topLevel.score} баллов`)
       .setButton({
@@ -592,7 +592,7 @@ export class AliceController {
     // Создаем элементы для ТОП-3 уровней
     const items = results.top3.map((levelResult, index) => {
       return ItemsListItemBuilder.create()
-        .setImageId(this.getLevelImageId(levelResult.level))
+        // .setImageId(this.getLevelImageId(levelResult.level)) // Временно отключено до загрузки изображений
         .setTitle(`${index + 1}. ${levelResult.fullName}`)
         .setDescription(`${levelResult.score} баллов - ${levelResult.interpretation}`)
         .setButton({
