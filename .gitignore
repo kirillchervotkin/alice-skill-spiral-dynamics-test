@@ -40,6 +40,8 @@ simple-test.js
 show-cards-structure.js
 *-request.json
 test-requests.json
+answer-*.json
+final-*.json
 *.ps1
 image-templates.html
 cards-preview.html

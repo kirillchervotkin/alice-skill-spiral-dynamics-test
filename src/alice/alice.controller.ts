@@ -54,64 +54,76 @@ export class AliceController {
     return this.startWelcome();
   }
 
-  // Согласие начать тест
+  // Согласие начать тест (только в приветствии)
   @Intent('spiral.yes')
   @Intent('YANDEX.CONFIRM')
   agreeToStart(@Data() data: SessionData): AliceResponse {
     const { state } = data || {};
 
-    // Если в состоянии приветствия - начинаем тест
+    // Только в состоянии приветствия начинаем тест
     if (!state || state === 'welcome') {
       return this.startFirstQuestion();
     }
 
-    // Если в состоянии тестирования - обрабатываем как ответ "да"
-    if (state === 'testing') {
-      return this.processAnswerWithScore(data, 2);
-    }
-
-    // По умолчанию начинаем тест
-    return this.startFirstQuestion();
+    // В других состояниях переадресуем на обработку ответов
+    return this.handleError(data);
   }
 
-  // Отказ от теста
+  // Отказ от теста (только в приветствии)
   @Intent('spiral.no')
   @Intent('YANDEX.REJECT')
   exit(@Data() data: SessionData): AliceResponse {
     const { state } = data || {};
 
-    // Если в состоянии приветствия - выходим
+    // Только в состоянии приветствия выходим
     if (!state || state === 'welcome') {
       return new SkillResponseBuilder('Всегда рада помочь. Обращайтесь!')
         .setEndSession()
         .build();
     }
 
-    // Если в состоянии тестирования - обрабатываем как ответ "нет"
-    if (state === 'testing') {
-      return this.processAnswerWithScore(data, 0);
-    }
-
-    // По умолчанию выходим
-    return new SkillResponseBuilder('Всегда рада помочь. Обращайтесь!')
-      .setEndSession()
-      .build();
+    // В других состояниях переадресуем на обработку ответов
+    return this.handleError(data);
   }
 
-  // Ответы на вопросы (дублирующие интенты для надежности)
+  // Ответы на вопросы теста
   @Intent('spiral.answer.yes')
   answerYes(@Data() data: SessionData): AliceResponse {
-    return this.processAnswerWithScore(data, 2);
+    const { state, currentQuestion } = data || {};
+    console.log(`Answer YES: state=${state}, currentQuestion=${currentQuestion}`);
+
+    // Только во время тестирования
+    if (state === 'testing') {
+      return this.processAnswerWithScore(data, 2);
+    }
+
+    return this.handleError(data);
   }
 
   @Intent('spiral.answer.no')
   answerNo(@Data() data: SessionData): AliceResponse {
-    return this.processAnswerWithScore(data, 0);
+    const { state, currentQuestion } = data || {};
+    console.log(`Answer NO: state=${state}, currentQuestion=${currentQuestion}`);
+
+    // Только во время тестирования
+    if (state === 'testing') {
+      return this.processAnswerWithScore(data, 0);
+    }
+
+    return this.handleError(data);
   }
 
   @Intent('spiral.answer.unsure')
   answerUnsure(@Data() data: SessionData): AliceResponse {
-    return this.processAnswerWithScore(data, 1);
+    const { state, currentQuestion } = data || {};
+    console.log(`Answer UNSURE: state=${state}, currentQuestion=${currentQuestion}`);
+
+    // Только во время тестирования
+    if (state === 'testing') {
+      return this.processAnswerWithScore(data, 1);
+    }
+
+    return this.handleError(data);
   }
 
   // Повтор вопроса
@@ -366,26 +378,31 @@ export class AliceController {
   }
 
   private processAnswerWithScore(data: SessionData, score: number): AliceResponse {
-    const { currentQuestion = 1, answers = [] } = data;
-    
+    const { currentQuestion = 1, answers = [] } = data || {};
+
+    console.log(`Processing answer: currentQuestion=${currentQuestion}, score=${score}, answersCount=${answers.length}`);
+
     // Сохраняем ответ
     const newAnswers = [...answers, { questionId: currentQuestion, score }];
-    
-    // Проверяем, закончились ли вопросы
+
+    // Проверяем, закончились ли вопросы (это был 24-й вопрос)
     if (currentQuestion >= 24) {
+      console.log('Test completed, showing results');
       return this.calculateAndShowResults(newAnswers);
     }
-    
+
     // Следующий вопрос
     const nextQuestion = currentQuestion + 1;
     const question = this.questionsService.getQuestion(nextQuestion);
-    
+
     if (!question) {
+      console.log(`Question ${nextQuestion} not found`);
       return new SkillResponseBuilder('Ошибка: вопрос не найден. Завершаем тест.')
         .setEndSession()
         .build();
     }
-    
+
+    console.log(`Showing question ${nextQuestion}`);
     return new SkillResponseBuilder(
       `Вопрос ${nextQuestion} из 24: ${question.text}`
     )
@@ -394,8 +411,8 @@ export class AliceController {
         { title: "Нет", hide: true },
         { title: "Не уверен", hide: true }
       ])
-      .setData({ 
-        currentQuestion: nextQuestion, 
+      .setData({
+        currentQuestion: nextQuestion,
         answers: newAnswers,
         state: 'testing'
       })
