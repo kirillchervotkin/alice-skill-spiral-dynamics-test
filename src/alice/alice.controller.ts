@@ -117,6 +117,11 @@ export class AliceController {
       return this.processAnswerWithScore(sessionData, 2);
     }
 
+    // Если данные полностью пустые (первый запуск), считаем это согласием начать тест
+    if (!state && !sessionData.currentQuestion && !sessionData.answers) {
+      return this.agreeToStart(data);
+    }
+
     return this.handleError(sessionData);
   }
 
@@ -140,6 +145,11 @@ export class AliceController {
     // Если состояние не определено, но есть данные теста, продолжаем тестирование
     if (!state && sessionData.currentQuestion && sessionData.answers) {
       return this.processAnswerWithScore(sessionData, 0);
+    }
+
+    // Если данные полностью пустые (первый запуск), считаем это отказом от теста
+    if (!state && !sessionData.currentQuestion && !sessionData.answers) {
+      return this.exit(data);
     }
 
     return this.handleError(sessionData);
