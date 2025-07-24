@@ -260,7 +260,7 @@ export class AliceController {
         { title: "Нет", hide: true },
         { title: "Не уверен", hide: true }
       ])
-      .setData(data)
+      .setData(sessionData)
       .build();
   }
 
@@ -284,7 +284,7 @@ export class AliceController {
         { title: "Выход", hide: false }
       ])
       .setData({
-        ...data,
+        ...sessionData,
         state: 'paused'
       })
       .build();
@@ -323,7 +323,7 @@ export class AliceController {
         { title: "Пауза", hide: false }
       ])
       .setData({
-        ...data,
+        ...sessionData,
         state: 'testing'
       })
       .build();
@@ -346,27 +346,27 @@ export class AliceController {
     const topLevel = results.top3[0];
     const description = this.spiralService.getLevelDescription(topLevel.level);
 
-    // Создаем карточку с большим изображением для описания уровня
-    const levelCard = BigImageCardBuilder.create()
-      // .setImageId(this.getLevelImageId(topLevel.level)) // Временно отключено до загрузки изображений
-      .setTitle(`${topLevel.fullName}`)
-      .setDescription(`${description}\n\nВаш результат: ${topLevel.score} баллов`)
-      .setButton({
-        title: "Вернуться к результатам",
-        hide: false
-      })
-      .build();
+    // Создаем карточку с большим изображением для описания уровня - временно отключено
+    // const levelCard = BigImageCardBuilder.create()
+    //   .setImageId(this.getLevelImageId(topLevel.level))
+    //   .setTitle(`${topLevel.fullName}`)
+    //   .setDescription(`${description}\n\nВаш результат: ${topLevel.score} баллов`)
+    //   .setButton({
+    //     title: "Вернуться к результатам",
+    //     hide: false
+    //   })
+    //   .build();
 
     return new SkillResponseBuilder(
-      `Подробнее о вашем доминирующем уровне:`
+      `Подробнее о вашем доминирующем уровне:\n\n${topLevel.fullName}\n\n${description}\n\nВаш результат: ${topLevel.score} баллов`
     )
-      .setCard(levelCard)
+      // .setCard(levelCard) // Временно отключено
       .setButtons([
         { title: "Повтори результаты", hide: false },
         { title: "Заново", hide: false },
         { title: "Отправить", hide: false }
       ])
-      .setData(data)
+      .setData(sessionData)
       .build();
   }
 
@@ -392,7 +392,7 @@ export class AliceController {
         { title: "Заново", hide: false },
         { title: "Отправить", hide: false }
       ])
-      .setData(data)
+      .setData(sessionData)
       .build();
   }
 
@@ -421,7 +421,7 @@ export class AliceController {
         { title: "Повтори результаты", hide: false },
         { title: "Заново", hide: false }
       ])
-      .setData(data)
+      .setData(sessionData)
       .build();
   }
 
@@ -461,7 +461,7 @@ export class AliceController {
           { title: "Не уверен", hide: true },
           { title: "Повтори", hide: false }
         ])
-        .setData(data)
+        .setData(sessionData)
         .build();
     }
 
@@ -469,7 +469,7 @@ export class AliceController {
       'Извини, не поняла. Попробуй сказать по-другому или скажи "Помощь".'
     )
       .setButtons([{ title: "Помощь", hide: false }])
-      .setData(data)
+      .setData(sessionData)
       .build();
   }
 
@@ -564,13 +564,13 @@ export class AliceController {
     const results = this.spiralService.calculateResults(answers);
     const voiceText = this.spiralService.formatResultsForVoice(results);
 
-    // Создаем карточку с результатами
-    const resultsCard = this.createResultsCard(results);
+    // Создаем карточку с результатами - временно отключено из-за проблем с изображениями
+    // const resultsCard = this.createResultsCard(results);
 
     return new SkillResponseBuilder(
       `Спасибо за ответы! Считаю твои результаты...\n\n${voiceText}`
     )
-      .setCard(resultsCard)
+      // .setCard(resultsCard) // Временно отключено
       .setButtons([
         { title: `Опиши ${results.top3[0].name}`, hide: false },
         { title: "Повтори результаты", hide: false },
