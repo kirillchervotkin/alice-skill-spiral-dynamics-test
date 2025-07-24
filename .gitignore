@@ -32,6 +32,14 @@ Thumbs.db
 # Coverage отчеты
 coverage/
 
+# Git служебные файлы
+.git/index
+.git/logs/
+.git/refs/
+.git/objects/
+.git/hooks/
+.git/info/
+
 # Файлы для разработки и тестирования (НЕ нужны для Алисы)
 test-*.js
 *-test.js
@@ -50,5 +58,27 @@ example-*.json
 CARDS_*.md
 IMAGES_SETUP.md
 ALICE_INTENTS_FULL.md
+SETUP_IMAGES.md
 .env.example
 Procfile
+
+# Дополнительные временные файлы и файлы сборки
+*.tsbuildinfo
+*.map
+.nyc_output/
+.jest/
+build/
+lib/
+out/
+
+# Файлы редакторов и IDE
+*.sublime-*
+.history/
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+
+# Системные файлы
+*.pid
+*.seed
+*.pid.lock

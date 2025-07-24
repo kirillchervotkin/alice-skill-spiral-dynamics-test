@@ -77,22 +77,31 @@ describe('AliceController (Simple Tests)', () => {
       state: 'testing' as const
     };
 
+    // Правильная структура данных для Яндекс.Диалогов
+    const mockAliceData = {
+      state: {
+        session: {
+          data: mockSessionData
+        }
+      }
+    };
+
     it('should handle yes answer', () => {
-      const response = controller.answerYes(mockSessionData);
+      const response = controller.answerYes(mockAliceData);
       
       expect(response).toBeDefined();
       expect(response.response.text).toContain('Вопрос 2 из 24');
     });
 
     it('should handle no answer', () => {
-      const response = controller.answerNo(mockSessionData);
+      const response = controller.answerNo(mockAliceData);
       
       expect(response).toBeDefined();
       expect(response.response.text).toContain('Вопрос 2 из 24');
     });
 
     it('should handle unsure answer', () => {
-      const response = controller.answerUnsure(mockSessionData);
+      const response = controller.answerUnsure(mockAliceData);
       
       expect(response).toBeDefined();
       expect(response.response.text).toContain('Вопрос 2 из 24');
@@ -116,8 +125,17 @@ describe('AliceController (Simple Tests)', () => {
       state: 'testing' as const
     };
 
+    // Правильная структура данных для Яндекс.Диалогов
+    const mockAliceDataLastQuestion = {
+      state: {
+        session: {
+          data: mockSessionDataLastQuestion
+        }
+      }
+    };
+
     it('should show results after last question', () => {
-      const response = controller.answerYes(mockSessionDataLastQuestion);
+      const response = controller.answerYes(mockAliceDataLastQuestion);
       
       expect(response).toBeDefined();
       expect(response.response.text).toContain('Спасибо за ответы!');

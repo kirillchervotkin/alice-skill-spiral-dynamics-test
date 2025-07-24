@@ -98,7 +98,7 @@ export class AliceController {
   @Intent('spiral.answer.yes')
   answerYes(@Data() data: any): AliceResponse {
     // Данные приходят в state.session.data согласно документации Яндекс.Диалогов
-    const sessionData = data?.state?.session?.data || {};
+    const sessionData = data?.state?.session?.data || data || {};
     const { state, currentQuestion } = sessionData;
     console.log(`Answer YES: sessionData=`, sessionData);
 
@@ -113,7 +113,7 @@ export class AliceController {
   @Intent('spiral.answer.no')
   answerNo(@Data() data: any): AliceResponse {
     // Данные приходят в state.session.data согласно документации Яндекс.Диалогов
-    const sessionData = data?.state?.session?.data || {};
+    const sessionData = data?.state?.session?.data || data || {};
     const { state, currentQuestion } = sessionData;
     console.log(`Answer NO: sessionData=`, sessionData);
 
@@ -128,7 +128,7 @@ export class AliceController {
   @Intent('spiral.answer.unsure')
   answerUnsure(@Data() data: any): AliceResponse {
     // Данные приходят в state.session.data согласно документации Яндекс.Диалогов
-    const sessionData = data?.state?.session?.data || {};
+    const sessionData = data?.state?.session?.data || data || {};
     const { state, currentQuestion } = sessionData;
     console.log(`Answer UNSURE: sessionData=`, sessionData);
 
