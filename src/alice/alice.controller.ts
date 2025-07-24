@@ -103,12 +103,17 @@ export class AliceController {
     console.log(`Answer YES: sessionData=`, sessionData);
 
     // Если в состоянии приветствия, переадресуем на согласие начать тест
-    if (!state || state === 'welcome') {
+    if (state === 'welcome') {
       return this.agreeToStart(data);
     }
 
     // Только во время тестирования
     if (state === 'testing') {
+      return this.processAnswerWithScore(sessionData, 2);
+    }
+
+    // Если состояние не определено, но есть данные теста, продолжаем тестирование
+    if (!state && sessionData.currentQuestion && sessionData.answers) {
       return this.processAnswerWithScore(sessionData, 2);
     }
 
@@ -123,12 +128,17 @@ export class AliceController {
     console.log(`Answer NO: sessionData=`, sessionData);
 
     // Если в состоянии приветствия, переадресуем на отказ от теста
-    if (!state || state === 'welcome') {
+    if (state === 'welcome') {
       return this.exit(data);
     }
 
     // Только во время тестирования
     if (state === 'testing') {
+      return this.processAnswerWithScore(sessionData, 0);
+    }
+
+    // Если состояние не определено, но есть данные теста, продолжаем тестирование
+    if (!state && sessionData.currentQuestion && sessionData.answers) {
       return this.processAnswerWithScore(sessionData, 0);
     }
 
