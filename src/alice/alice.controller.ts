@@ -57,8 +57,12 @@ export class AliceController {
   // Согласие начать тест (только в приветствии)
   @Intent('spiral.yes')
   @Intent('YANDEX.CONFIRM')
-  agreeToStart(@Data() data: SessionData): AliceResponse {
-    const { state } = data || {};
+  agreeToStart(@Data() data: any): AliceResponse {
+    // Данные приходят в state.session.data согласно документации Яндекс.Диалогов
+    const sessionData = data?.state?.session?.data || {};
+    const { state } = sessionData;
+
+    console.log(`Agree to start: sessionData=`, sessionData);
 
     // Только в состоянии приветствия начинаем тест
     if (!state || state === 'welcome') {
@@ -66,14 +70,18 @@ export class AliceController {
     }
 
     // В других состояниях переадресуем на обработку ответов
-    return this.handleError(data);
+    return this.handleError(sessionData);
   }
 
   // Отказ от теста (только в приветствии)
   @Intent('spiral.no')
   @Intent('YANDEX.REJECT')
-  exit(@Data() data: SessionData): AliceResponse {
-    const { state } = data || {};
+  exit(@Data() data: any): AliceResponse {
+    // Данные приходят в state.session.data согласно документации Яндекс.Диалогов
+    const sessionData = data?.state?.session?.data || {};
+    const { state } = sessionData;
+
+    console.log(`Exit: sessionData=`, sessionData);
 
     // Только в состоянии приветствия выходим
     if (!state || state === 'welcome') {
@@ -83,47 +91,53 @@ export class AliceController {
     }
 
     // В других состояниях переадресуем на обработку ответов
-    return this.handleError(data);
+    return this.handleError(sessionData);
   }
 
   // Ответы на вопросы теста
   @Intent('spiral.answer.yes')
-  answerYes(@Data() data: SessionData): AliceResponse {
-    const { state, currentQuestion } = data || {};
-    console.log(`Answer YES: state=${state}, currentQuestion=${currentQuestion}`);
+  answerYes(@Data() data: any): AliceResponse {
+    // Данные приходят в state.session.data согласно документации Яндекс.Диалогов
+    const sessionData = data?.state?.session?.data || {};
+    const { state, currentQuestion } = sessionData;
+    console.log(`Answer YES: sessionData=`, sessionData);
 
     // Только во время тестирования
     if (state === 'testing') {
-      return this.processAnswerWithScore(data, 2);
+      return this.processAnswerWithScore(sessionData, 2);
     }
 
-    return this.handleError(data);
+    return this.handleError(sessionData);
   }
 
   @Intent('spiral.answer.no')
-  answerNo(@Data() data: SessionData): AliceResponse {
-    const { state, currentQuestion } = data || {};
-    console.log(`Answer NO: state=${state}, currentQuestion=${currentQuestion}`);
+  answerNo(@Data() data: any): AliceResponse {
+    // Данные приходят в state.session.data согласно документации Яндекс.Диалогов
+    const sessionData = data?.state?.session?.data || {};
+    const { state, currentQuestion } = sessionData;
+    console.log(`Answer NO: sessionData=`, sessionData);
 
     // Только во время тестирования
     if (state === 'testing') {
-      return this.processAnswerWithScore(data, 0);
+      return this.processAnswerWithScore(sessionData, 0);
     }
 
-    return this.handleError(data);
+    return this.handleError(sessionData);
   }
 
   @Intent('spiral.answer.unsure')
-  answerUnsure(@Data() data: SessionData): AliceResponse {
-    const { state, currentQuestion } = data || {};
-    console.log(`Answer UNSURE: state=${state}, currentQuestion=${currentQuestion}`);
+  answerUnsure(@Data() data: any): AliceResponse {
+    // Данные приходят в state.session.data согласно документации Яндекс.Диалогов
+    const sessionData = data?.state?.session?.data || {};
+    const { state, currentQuestion } = sessionData;
+    console.log(`Answer UNSURE: sessionData=`, sessionData);
 
     // Только во время тестирования
     if (state === 'testing') {
-      return this.processAnswerWithScore(data, 1);
+      return this.processAnswerWithScore(sessionData, 1);
     }
 
-    return this.handleError(data);
+    return this.handleError(sessionData);
   }
 
   // Повтор вопроса
@@ -354,13 +368,13 @@ export class AliceController {
 
   private startFirstQuestion(): AliceResponse {
     const question = this.questionsService.getQuestion(1);
-    
+
     if (!question) {
       return new SkillResponseBuilder('Ошибка: не удалось загрузить первый вопрос.')
         .setEndSession()
         .build();
     }
-    
+
     return new SkillResponseBuilder(
       `Отлично! Начнём!\n\nВопрос 1 из 24: ${question.text}`
     )
@@ -369,8 +383,8 @@ export class AliceController {
         { title: "Нет", hide: true },
         { title: "Не уверен", hide: true }
       ])
-      .setData({ 
-        currentQuestion: 1, 
+      .setData({
+        currentQuestion: 1,
         answers: [],
         state: 'testing'
       })
