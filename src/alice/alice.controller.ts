@@ -50,7 +50,22 @@ export class AliceController {
       
       if (requestedLevel && results) {
         // Показываем описание конкретного цвета
-        return this.describeSpecificLevel(requestedLevel, results, sessionData);
+        try {
+          console.log(`🎨 Trying to describe level: ${requestedLevel}`);
+          return this.describeSpecificLevel(requestedLevel, results, sessionData);
+        } catch (error) {
+          console.error(`❌ Error in describeSpecificLevel:`, error);
+          return new SkillResponseBuilder(
+            `Ошибка при получении описания ${requestedLevel}. Попробуй "подробнее" для общего описания.`
+          )
+            .setButtons([
+              { title: "Подробнее", hide: false },
+              { title: "Повтори результаты", hide: false },
+              { title: "Заново", hide: false }
+            ])
+            .setData(sessionData)
+            .build();
+        }
       } else if (results) {
         // Показываем доминирующий уровень
         const topLevel = results.top3[0];
