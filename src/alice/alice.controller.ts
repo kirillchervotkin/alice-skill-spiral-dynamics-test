@@ -29,6 +29,53 @@ export class AliceController {
   // Базовый обработчик для всех запросов (когда интент не определен)
   @Intent()
   defaultHandler(@Data() data: any): AliceResponse {
+    const command = data?.request?.command?.toLowerCase() || '';
+    const intents = data?.request?.nlu?.intents || {};
+    
+    // Проверяем команды "опиши [цвет]"
+    if (command.includes('опиши')) {
+      const sessionData = data?.state?.session?.data || data || {};
+      const { results } = sessionData;
+      
+      // Определяем цвет из команды
+      let requestedLevel = null;
+      if (command.includes('красный')) requestedLevel = 'red';
+      else if (command.includes('желтый')) requestedLevel = 'yellow';
+      else if (command.includes('зеленый')) requestedLevel = 'green';
+      else if (command.includes('синий')) requestedLevel = 'blue';
+      else if (command.includes('оранжевый')) requestedLevel = 'orange';
+      else if (command.includes('фиолетовый')) requestedLevel = 'purple';
+      else if (command.includes('бежевый')) requestedLevel = 'beige';
+      else if (command.includes('бирюзовый')) requestedLevel = 'turquoise';
+      
+      if (requestedLevel && results) {
+        // Показываем описание конкретного цвета
+        return this.describeSpecificLevel(requestedLevel, results, sessionData);
+      } else if (results) {
+        // Показываем доминирующий уровень
+        const topLevel = results.top3[0];
+        const description = this.spiralService.getLevelDescription(topLevel.level);
+        return new SkillResponseBuilder(
+          `Подробнее о вашем доминирующем уровне:\n\n${topLevel.fullName}\n\n${description}\n\nВаш результат: ${topLevel.score} баллов`
+        )
+          .setButtons([
+            { title: "Повтори результаты", hide: false },
+            { title: "Заново", hide: false }
+          ])
+          .setData(sessionData)
+          .build();
+      } else {
+        return new SkillResponseBuilder('Сначала пройди тест, чтобы узнать свои результаты.')
+          .setButtons([{ title: "Заново", hide: true }])
+          .build();
+      }
+    }
+    
+    // Проверяем, есть ли интент spiral.describe
+    if (intents['spiral.describe']) {
+      return this.describeLevel(data);
+    }
+    
     console.log(`DEFAULT HANDLER: data=`, JSON.stringify(data, null, 2));
     return this.startWelcome();
   }
@@ -332,17 +379,12 @@ export class AliceController {
   // Описание уровня
   @Intent('spiral.describe')
   @Intent('spiral.details') // Добавляем интент для кнопки "Подробнее"
-  @Intent('spiral.describe.beige')
-  @Intent('spiral.describe.purple') 
-  @Intent('spiral.describe.red')
-  @Intent('spiral.describe.blue')
-  @Intent('spiral.describe.orange')
-  @Intent('spiral.describe.green')
-  @Intent('spiral.describe.yellow')
-  @Intent('spiral.describe.turquoise')
   describeLevel(@Data() data: any): AliceResponse {
+    console.log(`\n🚨🚨🚨 DESCRIBE LEVEL CALLED! 🚨🚨🚨`);
     console.log(`⏱️ DESCRIBE START`);
-    console.log(`📊 Full request data:`, JSON.stringify(data, null, 2));
+    console.log(`� Full srequest data:`, JSON.stringify(data, null, 2));
+    console.log(`🔍 Request command: "${data?.request?.command || 'UNDEFINED'}"`);
+    console.log(`🔍 Request original_utterance: "${data?.request?.original_utterance || 'UNDEFINED'}"`);
     
     const sessionData = data?.state?.session?.data || data || {};
     const { results } = sessionData;
@@ -352,9 +394,13 @@ export class AliceController {
     console.log(`🎨 Requested level: ${requestedLevel}`);
     
     if (requestedLevel) {
+      console.log(`✅ Found specific level: ${requestedLevel}, calling describeSpecificLevel`);
       // Если запрашивается конкретный цвет, показываем его описание
       return this.describeSpecificLevel(requestedLevel, results, sessionData);
     }
+    
+    console.log(`❌ No specific level found, showing dominant level`);
+    console.log(`📋 Results:`, JSON.stringify(results, null, 2));
     
     // Если интент общий, показываем описание доминирующего уровня
     if (!results) {
@@ -651,34 +697,48 @@ export class AliceController {
   }
 
   /**
-   * Определяет запрашиваемый уровень из интента
+   * Определяет запрашиваемый уровень из команды пользователя
    */
   private getRequestedLevelFromIntent(data: any): string | null {
-    // Проверяем, есть ли в запросе информация об интенте
-    const intents = data?.request?.nlu?.intents || {};
-    
-    // Проверяем каждый интент для конкретного цвета
-    if (intents['spiral.describe.beige']) return 'beige';
-    if (intents['spiral.describe.purple']) return 'purple';
-    if (intents['spiral.describe.red']) return 'red';
-    if (intents['spiral.describe.blue']) return 'blue';
-    if (intents['spiral.describe.orange']) return 'orange';
-    if (intents['spiral.describe.green']) return 'green';
-    if (intents['spiral.describe.yellow']) return 'yellow';
-    if (intents['spiral.describe.turquoise']) return 'turquoise';
-    
-    // Также проверяем текст команды на наличие названий цветов
+    // Проверяем текст команды на наличие названий цветов
     const command = data?.request?.command?.toLowerCase() || '';
     
-    if (command.includes('бежевый') || command.includes('beige')) return 'beige';
-    if (command.includes('фиолетовый') || command.includes('purple')) return 'purple';
-    if (command.includes('красный') || command.includes('red')) return 'red';
-    if (command.includes('синий') || command.includes('blue')) return 'blue';
-    if (command.includes('оранжевый') || command.includes('orange')) return 'orange';
-    if (command.includes('зеленый') || command.includes('green')) return 'green';
-    if (command.includes('желтый') || command.includes('yellow')) return 'yellow';
-    if (command.includes('бирюзовый') || command.includes('turquoise')) return 'turquoise';
+    console.log(`🔍 Analyzing command: "${command}"`);
     
+    if (command.includes('бежевый') || command.includes('beige')) {
+      console.log(`✅ Found beige in command`);
+      return 'beige';
+    }
+    if (command.includes('фиолетовый') || command.includes('purple')) {
+      console.log(`✅ Found purple in command`);
+      return 'purple';
+    }
+    if (command.includes('красный') || command.includes('red')) {
+      console.log(`✅ Found red in command`);
+      return 'red';
+    }
+    if (command.includes('синий') || command.includes('blue')) {
+      console.log(`✅ Found blue in command`);
+      return 'blue';
+    }
+    if (command.includes('оранжевый') || command.includes('orange')) {
+      console.log(`✅ Found orange in command`);
+      return 'orange';
+    }
+    if (command.includes('зеленый') || command.includes('green')) {
+      console.log(`✅ Found green in command`);
+      return 'green';
+    }
+    if (command.includes('желтый') || command.includes('yellow')) {
+      console.log(`✅ Found yellow in command`);
+      return 'yellow';
+    }
+    if (command.includes('бирюзовый') || command.includes('turquoise')) {
+      console.log(`✅ Found turquoise in command`);
+      return 'turquoise';
+    }
+    
+    console.log(`❌ No color found in command`);
     return null;
   }
 
