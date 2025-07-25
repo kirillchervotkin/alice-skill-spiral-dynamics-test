@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AliceController } from './alice.controller';
 import { SpiralDynamicsService } from '../spiral-dynamics/spiral-dynamics.service';
 import { QuestionsService } from '../spiral-dynamics/questions.service';
+import { PreconditionFailedException } from '@nestjs/common';
 
 describe('AliceController (Cards Tests)', () => {
   let controller: AliceController;
@@ -11,7 +12,6 @@ describe('AliceController (Cards Tests)', () => {
       controllers: [AliceController],
       providers: [SpiralDynamicsService, QuestionsService],
     }).compile();
-
     controller = module.get<AliceController>(AliceController);
   });
 

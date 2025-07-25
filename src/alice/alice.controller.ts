@@ -332,12 +332,31 @@ export class AliceController {
   // Описание уровня
   @Intent('spiral.describe')
   @Intent('spiral.details') // Добавляем интент для кнопки "Подробнее"
+  @Intent('spiral.describe.beige')
+  @Intent('spiral.describe.purple') 
+  @Intent('spiral.describe.red')
+  @Intent('spiral.describe.blue')
+  @Intent('spiral.describe.orange')
+  @Intent('spiral.describe.green')
+  @Intent('spiral.describe.yellow')
+  @Intent('spiral.describe.turquoise')
   describeLevel(@Data() data: any): AliceResponse {
     console.log(`⏱️ DESCRIBE START`);
     console.log(`📊 Full request data:`, JSON.stringify(data, null, 2));
     
     const sessionData = data?.state?.session?.data || data || {};
     const { results } = sessionData;
+    
+    // Определяем, какой уровень запрашивается из интента
+    const requestedLevel = this.getRequestedLevelFromIntent(data);
+    console.log(`🎨 Requested level: ${requestedLevel}`);
+    
+    if (requestedLevel) {
+      // Если запрашивается конкретный цвет, показываем его описание
+      return this.describeSpecificLevel(requestedLevel, results, sessionData);
+    }
+    
+    // Если интент общий, показываем описание доминирующего уровня
     if (!results) {
       return new SkillResponseBuilder('Сначала пройди тест, чтобы узнать свои результаты.')
         .setButtons([{ title: "Заново", hide: true }])
@@ -347,21 +366,9 @@ export class AliceController {
     const topLevel = results.top3[0];
     const description = this.spiralService.getLevelDescription(topLevel.level);
 
-    // Создаем карточку с большим изображением для описания уровня - временно отключено
-    // const levelCard = BigImageCardBuilder.create()
-    //   .setImageId(this.getLevelImageId(topLevel.level))
-    //   .setTitle(`${topLevel.fullName}`)
-    //   .setDescription(`${description}\n\nВаш результат: ${topLevel.score} баллов`)
-    //   .setButton({
-    //     title: "Вернуться к результатам",
-    //     hide: false
-    //   })
-    //   .build();
-
     return new SkillResponseBuilder(
       `Подробнее о вашем доминирующем уровне:\n\n${topLevel.fullName}\n\n${description}\n\nВаш результат: ${topLevel.score} баллов`
     )
-      // .setCard(levelCard) // Временно отключено
       .setButtons([
         { title: "Повтори результаты", hide: false },
         { title: "Заново", hide: false }
@@ -563,13 +570,13 @@ export class AliceController {
     const results = this.spiralService.calculateResults(answers);
     const voiceText = this.spiralService.formatResultsForVoice(results);
 
-    // Создаем карточку с результатами - временно отключено из-за проблем с изображениями
-    // const resultsCard = this.createResultsCard(results);
+    // Создаем карточку с результатами
+    const resultsCard = this.createResultsCard(results);
 
     return new SkillResponseBuilder(
       `Спасибо за ответы! Считаю твои результаты...\n\n${voiceText}`
     )
-      // .setCard(resultsCard) // Временно отключено
+      .setCard(resultsCard)
       .setButtons([
         { title: "Подробнее", hide: false },
         { title: "Повтори результаты", hide: false },
@@ -590,7 +597,7 @@ export class AliceController {
     // Создаем элементы для ТОП-3 уровней
     const items = results.top3.map((levelResult, index) => {
       return ItemsListItemBuilder.create()
-        // .setImageId(this.getLevelImageId(levelResult.level)) // Временно отключено до загрузки изображений
+        .setImageId(this.getLevelImageId(levelResult.level))
         .setTitle(`${index + 1}. ${levelResult.fullName}`)
         .setDescription(`${levelResult.score} баллов - ${levelResult.interpretation}`)
         .setButton({
@@ -628,17 +635,90 @@ export class AliceController {
    *    - turquoise_16.9.png → замените 'TURQUOISE_IMAGE_ID'
    */
   private getLevelImageId(level: string): string {
+    // ID изображений из консоли Яндекс.Диалогов (реальные ID)
     const imageMap: Record<string, string> = {
-      'beige': 'BEIGE_IMAGE_ID',        // Замените на реальный ID из Яндекс.Диалогов
-      'purple': 'PURPLE_IMAGE_ID',      // Замените на реальный ID из Яндекс.Диалогов
-      'red': 'RED_IMAGE_ID',            // Замените на реальный ID из Яндекс.Диалогов
-      'blue': 'BLUE_IMAGE_ID',          // Замените на реальный ID из Яндекс.Диалогов
-      'orange': 'ORANGE_IMAGE_ID',      // Замените на реальный ID из Яндекс.Диалогов
-      'green': 'GREEN_IMAGE_ID',        // Замените на реальный ID из Яндекс.Диалогов
-      'yellow': 'YELLOW_IMAGE_ID',      // Замените на реальный ID из Яндекс.Диалогов
-      'turquoise': 'TURQUOISE_IMAGE_ID' // Замените на реальный ID из Яндекс.Диалогов
+      'turquoise': '997614/035c2c7bc56c9e209993',      // Бирюзовый - Глобальность
+      'green': '213044/e580b554f5b7392becf8',          // Зеленый - Гармония и Равенство
+      'orange': '1030494/e0bb2184b0de6b684de0',        // Оранжевый - Успех и Конкуренция
+      'purple': '1533899/62bbc8d31b97a367737a',        // Фиолетовый - Магия и Племенной
+      'yellow': '1533899/7fd88249cb352eff8683',        // Желтый - Гибкость и Системы
+      'red': '1521359/5e49979b32cb8b93af7f',           // Красный - Власть и Сила
+      'blue': '13200873/8e7d386a0dd846ed17e0',         // Синий - Порядок и Долг
+      'beige': '1030494/022efd253558a2baea16'          // Бежевый - Выживание
     };
 
-    return imageMap[level] || 'DEFAULT_IMAGE_ID';
+    return imageMap[level] || '1030494/022efd253558a2baea16';
+  }
+
+  /**
+   * Определяет запрашиваемый уровень из интента
+   */
+  private getRequestedLevelFromIntent(data: any): string | null {
+    // Проверяем, есть ли в запросе информация об интенте
+    const intents = data?.request?.nlu?.intents || {};
+    
+    // Проверяем каждый интент для конкретного цвета
+    if (intents['spiral.describe.beige']) return 'beige';
+    if (intents['spiral.describe.purple']) return 'purple';
+    if (intents['spiral.describe.red']) return 'red';
+    if (intents['spiral.describe.blue']) return 'blue';
+    if (intents['spiral.describe.orange']) return 'orange';
+    if (intents['spiral.describe.green']) return 'green';
+    if (intents['spiral.describe.yellow']) return 'yellow';
+    if (intents['spiral.describe.turquoise']) return 'turquoise';
+    
+    // Также проверяем текст команды на наличие названий цветов
+    const command = data?.request?.command?.toLowerCase() || '';
+    
+    if (command.includes('бежевый') || command.includes('beige')) return 'beige';
+    if (command.includes('фиолетовый') || command.includes('purple')) return 'purple';
+    if (command.includes('красный') || command.includes('red')) return 'red';
+    if (command.includes('синий') || command.includes('blue')) return 'blue';
+    if (command.includes('оранжевый') || command.includes('orange')) return 'orange';
+    if (command.includes('зеленый') || command.includes('green')) return 'green';
+    if (command.includes('желтый') || command.includes('yellow')) return 'yellow';
+    if (command.includes('бирюзовый') || command.includes('turquoise')) return 'turquoise';
+    
+    return null;
+  }
+
+  /**
+   * Показывает описание конкретного уровня
+   */
+  private describeSpecificLevel(level: string, results: TestResult | undefined, sessionData: any): AliceResponse {
+    const description = this.spiralService.getLevelDescription(level as any);
+    const levelMeta = this.spiralService.getLevelFullName(level as any);
+    
+    // Если есть результаты теста, показываем балл пользователя для этого уровня
+    let userScore = '';
+    if (results && results.allScores) {
+      const score = results.allScores[level as keyof typeof results.allScores] || 0;
+      const interpretation = this.getScoreInterpretation(score);
+      userScore = `\n\nВаш результат по этому уровню: ${score} баллов - ${interpretation}`;
+    }
+
+    return new SkillResponseBuilder(
+      `${levelMeta}\n\n${description}${userScore}`
+    )
+      .setButtons([
+        { title: "Повтори результаты", hide: false },
+        { title: "Заново", hide: false },
+        { title: "Выход", hide: false }
+      ])
+      .setData(sessionData)
+      .build();
+  }
+
+  /**
+   * Интерпретация баллов для конкретного уровня
+   */
+  private getScoreInterpretation(score: number): string {
+    if (score >= 5) {
+      return 'Доминирующий уровень. Эти ценности наиболее ярко выражены в вашем текущем мировоззрении и поведении.';
+    } else if (score >= 3) {
+      return 'Вторичный уровень. Эти ценности присутствуют и влияют на вас, но не являются основными.';
+    } else {
+      return 'Слабо выражен. Эти ценности в данный момент мало актуальны для вас или сознательно отвергаются.';
+    }
   }
 }
