@@ -38,16 +38,16 @@ export class AliceController {
     if (command.includes('опиши')) {
       const { results } = data;
 
-      // Определяем цвет из команды
+      // Определяем цвет из команды (поддерживаем русские и английские названия)
       let requestedLevel = null;
-      if (command.includes('красный')) requestedLevel = 'red';
-      else if (command.includes('желтый')) requestedLevel = 'yellow';
-      else if (command.includes('зеленый')) requestedLevel = 'green';
-      else if (command.includes('синий')) requestedLevel = 'blue';
-      else if (command.includes('оранжевый')) requestedLevel = 'orange';
-      else if (command.includes('фиолетовый')) requestedLevel = 'purple';
-      else if (command.includes('бежевый')) requestedLevel = 'beige';
-      else if (command.includes('бирюзовый')) requestedLevel = 'turquoise';
+      if (command.includes('красный') || command.includes('red')) requestedLevel = 'red';
+      else if (command.includes('желтый') || command.includes('yellow')) requestedLevel = 'yellow';
+      else if (command.includes('зеленый') || command.includes('green')) requestedLevel = 'green';
+      else if (command.includes('синий') || command.includes('blue')) requestedLevel = 'blue';
+      else if (command.includes('оранжевый') || command.includes('orange')) requestedLevel = 'orange';
+      else if (command.includes('фиолетовый') || command.includes('purple')) requestedLevel = 'purple';
+      else if (command.includes('бежевый') || command.includes('beige')) requestedLevel = 'beige';
+      else if (command.includes('бирюзовый') || command.includes('turquoise')) requestedLevel = 'turquoise';
 
       if (requestedLevel && results) {
         // Показываем описание конкретного цвета
@@ -761,7 +761,7 @@ export class AliceController {
       let levelMeta = '';
 
       try {
-        description = this.spiralService.getLevelDescription(spiralLevel as any);
+        description = this.spiralService.getLevelDescription(spiralLevel as any).replace(/'/g, '"');
         console.log(`✅ Got description: ${description.substring(0, 50)}...`);
       } catch (error) {
         console.error(`❌ Error getting description:`, error);
