@@ -761,27 +761,63 @@ export class AliceController {
    * Показывает описание конкретного уровня
    */
   private describeSpecificLevel(level: string, results: TestResult | undefined, sessionData: any): AliceResponse {
-    const description = this.spiralService.getLevelDescription(level as any);
-    const levelMeta = this.spiralService.getLevelFullName(level as any);
-    
-    // Если есть результаты теста, показываем балл пользователя для этого уровня
-    let userScore = '';
-    if (results && results.allScores) {
-      const score = results.allScores[level as keyof typeof results.allScores] || 0;
-      const interpretation = this.getScoreInterpretation(score);
-      userScore = `\n\nВаш результат по этому уровню: ${score} баллов - ${interpretation}`;
-    }
+    try {
+      console.log(`🎨 describeSpecificLevel called with level: ${level}`);
+      
+      // Безопасное получение описания
+      let description = '';
+      let levelMeta = '';
+      
+      try {
+        description = this.spiralService.getLevelDescription(level as any);
+        console.log(`✅ Got description: ${description.substring(0, 50)}...`);
+      } catch (error) {
+        console.error(`❌ Error getting description:`, error);
+        description = 'Описание временно недоступно.';
+      }
+      
+      try {
+        levelMeta = this.spiralService.getLevelFullName(level as any);
+        console.log(`✅ Got level meta: ${levelMeta}`);
+      } catch (error) {
+        console.error(`❌ Error getting level meta:`, error);
+        levelMeta = `Уровень ${level}`;
+      }
+      
+      // Если есть результаты теста, показываем балл пользователя для этого уровня
+      let userScore = '';
+      if (results && results.allScores) {
+        const score = results.allScores[level as keyof typeof results.allScores] || 0;
+        const interpretation = this.getScoreInterpretation(score);
+        userScore = `\n\nВаш результат по этому уровню: ${score} баллов - ${interpretation}`;
+        console.log(`✅ Got user score: ${score} баллов`);
+      }
 
-    return new SkillResponseBuilder(
-      `${levelMeta}\n\n${description}${userScore}`
-    )
-      .setButtons([
-        { title: "Повтори результаты", hide: false },
-        { title: "Заново", hide: false },
-        { title: "Выход", hide: false }
-      ])
-      .setData(sessionData)
-      .build();
+      const responseText = `${levelMeta}\n\n${description}${userScore}`;
+      console.log(`✅ Final response text: ${responseText.substring(0, 100)}...`);
+
+      return new SkillResponseBuilder(responseText)
+        .setButtons([
+          { title: "Повтори результаты", hide: false },
+          { title: "Заново", hide: false },
+          { title: "Выход", hide: false }
+        ])
+        .setData(sessionData)
+        .build();
+        
+    } catch (error) {
+      console.error(`❌ Critical error in describeSpecificLevel:`, error);
+      return new SkillResponseBuilder(
+        `Извини, произошла ошибка при получении описания уровня ${level}. Попробуй "подробнее" для общего описания.`
+      )
+        .setButtons([
+          { title: "Подробнее", hide: false },
+          { title: "Повтори результаты", hide: false },
+          { title: "Заново", hide: false }
+        ])
+        .setData(sessionData)
+        .build();
+    }
   }
 
   /**
