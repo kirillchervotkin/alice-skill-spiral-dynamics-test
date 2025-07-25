@@ -29,68 +29,6 @@ export class AliceController {
   // Базовый обработчик для всех запросов (когда интент не определен)
   @Intent()
   defaultHandler(@Data() data: any): AliceResponse {
-    const command = data?.request?.command?.toLowerCase() || '';
-    const intents = data?.request?.nlu?.intents || {};
-    
-    // Проверяем команды "опиши [цвет]"
-    if (command.includes('опиши')) {
-      const sessionData = data?.state?.session?.data || data || {};
-      const { results } = sessionData;
-      
-      // Определяем цвет из команды
-      let requestedLevel = null;
-      if (command.includes('красный')) requestedLevel = 'red';
-      else if (command.includes('желтый')) requestedLevel = 'yellow';
-      else if (command.includes('зеленый')) requestedLevel = 'green';
-      else if (command.includes('синий')) requestedLevel = 'blue';
-      else if (command.includes('оранжевый')) requestedLevel = 'orange';
-      else if (command.includes('фиолетовый')) requestedLevel = 'purple';
-      else if (command.includes('бежевый')) requestedLevel = 'beige';
-      else if (command.includes('бирюзовый')) requestedLevel = 'turquoise';
-      
-      if (requestedLevel && results) {
-        // Показываем описание конкретного цвета
-        try {
-          console.log(`🎨 Trying to describe level: ${requestedLevel}`);
-          return this.describeSpecificLevel(requestedLevel, results, sessionData);
-        } catch (error) {
-          console.error(`❌ Error in describeSpecificLevel:`, error);
-          return new SkillResponseBuilder(
-            `Ошибка при получении описания ${requestedLevel}. Попробуй "подробнее" для общего описания.`
-          )
-            .setButtons([
-              { title: "Подробнее", hide: false },
-              { title: "Повтори результаты", hide: false },
-              { title: "Заново", hide: false }
-            ])
-            .setData(sessionData)
-            .build();
-        }
-      } else if (results) {
-        // Показываем доминирующий уровень
-        const topLevel = results.top3[0];
-        const description = this.spiralService.getLevelDescription(topLevel.level);
-        return new SkillResponseBuilder(
-          `Подробнее о вашем доминирующем уровне:\n\n${topLevel.fullName}\n\n${description}\n\nВаш результат: ${topLevel.score} баллов`
-        )
-          .setButtons([
-            { title: "Повтори результаты", hide: false },
-            { title: "Заново", hide: false }
-          ])
-          .setData(sessionData)
-          .build();
-      } else {
-        return new SkillResponseBuilder('Сначала пройди тест, чтобы узнать свои результаты.')
-          .setButtons([{ title: "Заново", hide: true }])
-          .build();
-      }
-    }
-    
-    // Проверяем, есть ли интент spiral.describe
-    if (intents['spiral.describe']) {
-      return this.describeLevel(data);
-    }
-    
     console.log(`DEFAULT HANDLER: data=`, JSON.stringify(data, null, 2));
     return this.startWelcome();
   }
@@ -122,13 +60,9 @@ export class AliceController {
   @Intent('spiral.yes')
   agreeToStart(@Data() data: any): AliceResponse {
     console.log(`🎯 AGREE TO START CALLED`);
-    console.log(`📊 Full request data:`, JSON.stringify(data, null, 2));
+    console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
     
-    // Данные приходят в state.session.data согласно документации Яндекс.Диалогов
-    const sessionData = data?.state?.session?.data || {};
-    const { state } = sessionData;
-
-    console.log(`📋 Session data:`, sessionData);
+    const { state } = data;
     console.log(`🔄 Current state:`, state);
 
     // Если состояние не определено или welcome - начинаем тест
@@ -140,7 +74,7 @@ export class AliceController {
 
     // В других состояниях это ошибка
     console.log(`❌ Wrong state for agreement: ${state}`);
-    return this.handleError(sessionData);
+    return this.handleError(data);
   }
 
   // Отказ от теста (только в приветствии)
@@ -148,13 +82,9 @@ export class AliceController {
   @Intent('YANDEX.REJECT')
   exit(@Data() data: any): AliceResponse {
     console.log(`⏱️ SPIRAL.NO START`);
-    console.log(`📊 Full request data:`, JSON.stringify(data, null, 2));
+    console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
     
-    // Данные приходят в state.session.data согласно документации Яндекс.Диалогов
-    const sessionData = data?.state?.session?.data || data || {};
-    const { state, currentQuestion } = sessionData;
-
-    console.log(`📋 Session data:`, sessionData);
+    const { state, currentQuestion } = data;
     console.log(`🔄 State: ${state}, Current Question: ${currentQuestion}`);
 
     // Если в состоянии приветствия, завершаем навык
@@ -168,17 +98,17 @@ export class AliceController {
     // Если во время тестирования, обрабатываем как ответ "нет"
     if (state === 'testing') {
       console.log(`✅ Testing state - processing NO answer`);
-      return this.processAnswerWithScore(sessionData, 0);
+      return this.processAnswerWithScore(data, 0);
     }
 
     // Если состояние не определено, но есть данные теста, продолжаем тестирование
-    if (!state && sessionData.currentQuestion && sessionData.answers) {
+    if (!state && data.currentQuestion && data.answers) {
       console.log(`✅ No state but has test data - processing NO answer`);
-      return this.processAnswerWithScore(sessionData, 0);
+      return this.processAnswerWithScore(data, 0);
     }
 
     // Если данные полностью пустые (первый запуск), считаем это отказом от теста
-    if (!state && !sessionData.currentQuestion && !sessionData.answers) {
+    if (!state && !data.currentQuestion && !data.answers) {
       console.log(`✅ Empty data - exiting skill`);
       return new SkillResponseBuilder('Всегда рада помочь. Обращайтесь!')
         .setEndSession()
@@ -186,20 +116,16 @@ export class AliceController {
     }
 
     console.log(`❌ Unhandled case - showing error`);
-    return this.handleError(sessionData);
+    return this.handleError(data);
   }
 
   // Ответы на вопросы теста
   @Intent('spiral.answer.yes')
   answerYes(@Data() data: any): AliceResponse {
     console.log(`⏱️ ANSWER YES START`);
-    console.log(`📊 Full request data:`, JSON.stringify(data, null, 2));
+    console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
     
-    // Данные приходят в state.session.data согласно документации Яндекс.Диалогов
-    const sessionData = data?.state?.session?.data || data || {};
-    const { state, currentQuestion } = sessionData;
-    
-    console.log(`📋 Session data:`, sessionData);
+    const { state, currentQuestion } = data;
     console.log(`🔄 State: ${state}, Current Question: ${currentQuestion}`);
 
     // Если в состоянии приветствия, переадресуем на согласие начать тест
@@ -211,35 +137,31 @@ export class AliceController {
     // Только во время тестирования
     if (state === 'testing') {
       console.log(`✅ Testing state - processing answer`);
-      return this.processAnswerWithScore(sessionData, 2);
+      return this.processAnswerWithScore(data, 2);
     }
 
     // Если состояние не определено, но есть данные теста, продолжаем тестирование
-    if (!state && sessionData.currentQuestion && sessionData.answers) {
+    if (!state && data.currentQuestion && data.answers) {
       console.log(`✅ No state but has test data - continuing test`);
-      return this.processAnswerWithScore(sessionData, 2);
+      return this.processAnswerWithScore(data, 2);
     }
 
     // Если данные полностью пустые (первый запуск), считаем это согласием начать тест
-    if (!state && !sessionData.currentQuestion && !sessionData.answers) {
+    if (!state && !data.currentQuestion && !data.answers) {
       console.log(`✅ Empty data - starting test`);
       return this.agreeToStart(data);
     }
 
     console.log(`❌ Unhandled case - showing error`);
-    return this.handleError(sessionData);
+    return this.handleError(data);
   }
 
   @Intent('spiral.answer.no')
   answerNo(@Data() data: any): AliceResponse {
     console.log(`⏱️ ANSWER NO START`);
-    console.log(`📊 Full request data:`, JSON.stringify(data, null, 2));
+    console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
     
-    // Данные приходят в state.session.data согласно документации Яндекс.Диалогов
-    const sessionData = data?.state?.session?.data || data || {};
-    const { state, currentQuestion } = sessionData;
-    
-    console.log(`📋 Session data:`, sessionData);
+    const { state, currentQuestion } = data;
     console.log(`🔄 State: ${state}, Current Question: ${currentQuestion}`);
 
     // Если в состоянии приветствия, переадресуем на отказ от теста
@@ -251,61 +173,56 @@ export class AliceController {
     // Только во время тестирования
     if (state === 'testing') {
       console.log(`✅ Testing state - processing NO answer`);
-      return this.processAnswerWithScore(sessionData, 0);
+      return this.processAnswerWithScore(data, 0);
     }
 
     // Если состояние не определено, но есть данные теста, продолжаем тестирование
-    if (!state && sessionData.currentQuestion && sessionData.answers) {
+    if (!state && data.currentQuestion && data.answers) {
       console.log(`✅ No state but has test data - processing NO answer`);
-      return this.processAnswerWithScore(sessionData, 0);
+      return this.processAnswerWithScore(data, 0);
     }
 
     // Если данные полностью пустые (первый запуск), считаем это отказом от теста
-    if (!state && !sessionData.currentQuestion && !sessionData.answers) {
+    if (!state && !data.currentQuestion && !data.answers) {
       console.log(`✅ Empty data - exiting skill`);
       return this.exit(data);
     }
 
     console.log(`❌ Unhandled case - showing error`);
-    return this.handleError(sessionData);
+    return this.handleError(data);
   }
 
   @Intent('spiral.answer.unsure')
   answerUnsure(@Data() data: any): AliceResponse {
     console.log(`⏱️ ANSWER UNSURE START`);
-    console.log(`📊 Full request data:`, JSON.stringify(data, null, 2));
+    console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
     
-    // Данные приходят в state.session.data согласно документации Яндекс.Диалогов
-    const sessionData = data?.state?.session?.data || data || {};
-    const { state, currentQuestion } = sessionData;
-    
-    console.log(`📋 Session data:`, sessionData);
+    const { state, currentQuestion } = data;
     console.log(`🔄 State: ${state}, Current Question: ${currentQuestion}`);
 
     // Только во время тестирования
     if (state === 'testing') {
       console.log(`✅ Testing state - processing UNSURE answer`);
-      return this.processAnswerWithScore(sessionData, 1);
+      return this.processAnswerWithScore(data, 1);
     }
 
     // Если состояние не определено, но есть данные теста, продолжаем тестирование
-    if (!state && sessionData.currentQuestion && sessionData.answers) {
+    if (!state && data.currentQuestion && data.answers) {
       console.log(`✅ No state but has test data - processing UNSURE answer`);
-      return this.processAnswerWithScore(sessionData, 1);
+      return this.processAnswerWithScore(data, 1);
     }
 
     console.log(`❌ Unhandled case - showing error`);
-    return this.handleError(sessionData);
+    return this.handleError(data);
   }
 
   // Повтор вопроса
   @Intent('spiral.repeat')
   repeatQuestion(@Data() data: any): AliceResponse {
     console.log(`⏱️ REPEAT START`);
-    console.log(`📊 Full request data:`, JSON.stringify(data, null, 2));
+    console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
     
-    const sessionData = data?.state?.session?.data || data || {};
-    const { currentQuestion = 1 } = sessionData;
+    const { currentQuestion = 1 } = data;
     const question = this.questionsService.getQuestion(currentQuestion);
     
     if (!question) {
@@ -322,7 +239,7 @@ export class AliceController {
         { title: "Нет", hide: true },
         { title: "Не уверен", hide: true }
       ])
-      .setData(sessionData)
+      .setData(data)
       .build();
   }
 
@@ -330,10 +247,9 @@ export class AliceController {
   @Intent('spiral.pause')
   pauseTest(@Data() data: any): AliceResponse {
     console.log(`⏱️ PAUSE START`);
-    console.log(`📊 Full request data:`, JSON.stringify(data, null, 2));
+    console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
     
-    const sessionData = data?.state?.session?.data || data || {};
-    const { currentQuestion = 1, answers = [] } = sessionData;
+    const { currentQuestion = 1, answers = [] } = data;
 
     return new SkillResponseBuilder(
       `Тест приостановлен на вопросе ${currentQuestion} из 24. ` +
@@ -346,7 +262,7 @@ export class AliceController {
         { title: "Выход", hide: false }
       ])
       .setData({
-        ...sessionData,
+        ...data,
         state: 'paused'
       })
       .build();
@@ -356,10 +272,9 @@ export class AliceController {
   @Intent('spiral.continue')
   continueTest(@Data() data: any): AliceResponse {
     console.log(`⏱️ CONTINUE START`);
-    console.log(`📊 Full request data:`, JSON.stringify(data, null, 2));
+    console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
     
-    const sessionData = data?.state?.session?.data || data || {};
-    const { currentQuestion = 1, state } = sessionData;
+    const { currentQuestion = 1, state } = data;
 
     if (state !== 'paused') {
       return new SkillResponseBuilder('Тест не был приостановлен. Хочешь начать заново?')
@@ -385,7 +300,7 @@ export class AliceController {
         { title: "Пауза", hide: false }
       ])
       .setData({
-        ...sessionData,
+        ...data,
         state: 'testing'
       })
       .build();
@@ -397,12 +312,9 @@ export class AliceController {
   describeLevel(@Data() data: any): AliceResponse {
     console.log(`\n🚨🚨🚨 DESCRIBE LEVEL CALLED! 🚨🚨🚨`);
     console.log(`⏱️ DESCRIBE START`);
-    console.log(`� Full srequest data:`, JSON.stringify(data, null, 2));
-    console.log(`🔍 Request command: "${data?.request?.command || 'UNDEFINED'}"`);
-    console.log(`🔍 Request original_utterance: "${data?.request?.original_utterance || 'UNDEFINED'}"`);
+    console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
     
-    const sessionData = data?.state?.session?.data || data || {};
-    const { results } = sessionData;
+    const { results } = data;
     
     // Определяем, какой уровень запрашивается из интента
     const requestedLevel = this.getRequestedLevelFromIntent(data);
@@ -411,7 +323,7 @@ export class AliceController {
     if (requestedLevel) {
       console.log(`✅ Found specific level: ${requestedLevel}, calling describeSpecificLevel`);
       // Если запрашивается конкретный цвет, показываем его описание
-      return this.describeSpecificLevel(requestedLevel, results, sessionData);
+      return this.describeSpecificLevel(requestedLevel, results, data);
     }
     
     console.log(`❌ No specific level found, showing dominant level`);
@@ -434,7 +346,7 @@ export class AliceController {
         { title: "Повтори результаты", hide: false },
         { title: "Заново", hide: false }
       ])
-      .setData(sessionData)
+      .setData(data)
       .build();
   }
 
@@ -442,10 +354,9 @@ export class AliceController {
   @Intent('spiral.repeat_results')
   repeatResults(@Data() data: any): AliceResponse {
     console.log(`⏱️ REPEAT RESULTS START`);
-    console.log(`📊 Full request data:`, JSON.stringify(data, null, 2));
+    console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
     
-    const sessionData = data?.state?.session?.data || data || {};
-    const { results } = sessionData;
+    const { results } = data;
     if (!results) {
       return new SkillResponseBuilder('Сначала пройди тест, чтобы узнать свои результаты.')
         .setButtons([{ title: "Заново", hide: true }])
@@ -459,7 +370,7 @@ export class AliceController {
         { title: "Подробнее", hide: false },
         { title: "Заново", hide: false }
       ])
-      .setData(sessionData)
+      .setData(data)
       .build();
   }
 
@@ -467,10 +378,9 @@ export class AliceController {
   @Intent('spiral.send')
   sendResults(@Data() data: any): AliceResponse {
     console.log(`⏱️ SEND START`);
-    console.log(`📊 Full request data:`, JSON.stringify(data, null, 2));
+    console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
     
-    const sessionData = data?.state?.session?.data || data || {};
-    const { results } = sessionData;
+    const { results } = data;
 
     if (!results) {
       return new SkillResponseBuilder(
@@ -488,7 +398,7 @@ export class AliceController {
         { title: "Повтори результаты", hide: false },
         { title: "Заново", hide: false }
       ])
-      .setData(sessionData)
+      .setData(data)
       .build();
   }
 
@@ -510,10 +420,9 @@ export class AliceController {
   @Intent('spiral.error')
   handleError(@Data() data: any): AliceResponse {
     console.log(`⏱️ ERROR START`);
-    console.log(`📊 Full request data:`, JSON.stringify(data, null, 2));
+    console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
     
-    const sessionData = data?.state?.session?.data || data || {};
-    const { currentQuestion = 1, state } = sessionData;
+    const { currentQuestion = 1, state } = data;
 
     if (state === 'testing') {
       const question = this.questionsService.getQuestion(currentQuestion);
@@ -528,7 +437,7 @@ export class AliceController {
           { title: "Не уверен", hide: true },
           { title: "Повтори", hide: false }
         ])
-        .setData(sessionData)
+        .setData(data)
         .build();
     }
 
@@ -536,7 +445,7 @@ export class AliceController {
       'Извини, не поняла. Попробуй сказать по-другому или скажи "Помощь".'
     )
       .setButtons([{ title: "Помощь", hide: false }])
-      .setData(sessionData)
+      .setData(data)
       .build();
   }
 
