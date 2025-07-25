@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Req } from '@nestjs/common';
 import {
   Intent,
   Data,
@@ -28,8 +28,70 @@ export class AliceController {
 
   // Базовый обработчик для всех запросов (когда интент не определен)
   @Intent()
-  defaultHandler(@Data() data: any): AliceResponse {
+  defaultHandler(@Data() data: any, @Req() req: any): AliceResponse {
     console.log(`DEFAULT HANDLER: data=`, JSON.stringify(data, null, 2));
+    
+    const command = req?.body?.request?.command?.toLowerCase() || '';
+    const intents = req?.body?.request?.nlu?.intents || {};
+    
+    // Проверяем команды "опиши [цвет]"
+    if (command.includes('опиши')) {
+      const { results } = data;
+      
+      // Определяем цвет из команды
+      let requestedLevel = null;
+      if (command.includes('красный')) requestedLevel = 'red';
+      else if (command.includes('желтый')) requestedLevel = 'yellow';
+      else if (command.includes('зеленый')) requestedLevel = 'green';
+      else if (command.includes('синий')) requestedLevel = 'blue';
+      else if (command.includes('оранжевый')) requestedLevel = 'orange';
+      else if (command.includes('фиолетовый')) requestedLevel = 'purple';
+      else if (command.includes('бежевый')) requestedLevel = 'beige';
+      else if (command.includes('бирюзовый')) requestedLevel = 'turquoise';
+      
+      if (requestedLevel && results) {
+        // Показываем описание конкретного цвета
+        try {
+          console.log(`🎨 Trying to describe level: ${requestedLevel}`);
+          return this.describeSpecificLevel(requestedLevel, results, data);
+        } catch (error) {
+          console.error(`❌ Error in describeSpecificLevel:`, error);
+          return new SkillResponseBuilder(
+            `Ошибка при получении описания ${requestedLevel}. Попробуй "подробнее" для общего описания.`
+          )
+            .setButtons([
+              { title: "Подробнее", hide: false },
+              { title: "Повтори результаты", hide: false },
+              { title: "Заново", hide: false }
+            ])
+            .setData(data)
+            .build();
+        }
+      } else if (results) {
+        // Показываем доминирующий уровень
+        const topLevel = results.top3[0];
+        const description = this.spiralService.getLevelDescription(topLevel.level);
+        return new SkillResponseBuilder(
+          `Подробнее о вашем доминирующем уровне:\n\n${topLevel.fullName}\n\n${description}\n\nВаш результат: ${topLevel.score} баллов`
+        )
+          .setButtons([
+            { title: "Повтори результаты", hide: false },
+            { title: "Заново", hide: false }
+          ])
+          .setData(data)
+          .build();
+      } else {
+        return new SkillResponseBuilder('Сначала пройди тест, чтобы узнать свои результаты.')
+          .setButtons([{ title: "Заново", hide: true }])
+          .build();
+      }
+    }
+    
+    // Проверяем, есть ли интент spiral.describe
+    if (intents['spiral.describe']) {
+      return this.describeLevel(data);
+    }
+    
     return this.startWelcome();
   }
 
