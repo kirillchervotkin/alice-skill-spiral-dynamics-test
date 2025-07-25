@@ -61,7 +61,7 @@ describe('AliceController (Cards Tests)', () => {
         }
       };
       
-      const response = controller.answerYes(mockAliceData);
+      const response = controller.answerYes(mockSessionDataLastQuestion);
 
       expect(response).toBeDefined();
       expect(response.response.card).toBeDefined();
@@ -78,7 +78,7 @@ describe('AliceController (Cards Tests)', () => {
         }
       };
       
-      const response = controller.answerYes(mockAliceData);
+      const response = controller.answerYes(mockSessionDataLastQuestion);
       const card = response.response.card as any;
       
       expect(card.type).toBe('ItemsList');
@@ -89,16 +89,7 @@ describe('AliceController (Cards Tests)', () => {
     });
 
     it('should create card items with correct data', () => {
-      // Правильная структура данных для Яндекс.Диалогов
-      const mockAliceData = {
-        state: {
-          session: {
-            data: mockSessionDataLastQuestion
-          }
-        }
-      };
-      
-      const response = controller.answerYes(mockAliceData);
+      const response = controller.answerYes(mockSessionDataLastQuestion);
       const card = response.response.card as any;
       
       // Проверяем первый элемент
@@ -145,21 +136,12 @@ describe('AliceController (Cards Tests)', () => {
 
     it('should return default image for unknown level', () => {
       const imageId = (controller as any).getLevelImageId('unknown');
-      expect(imageId).toBe('DEFAULT_IMAGE_ID');
+      expect(imageId).toBe('1030494/022efd253558a2baea16'); // beige image as default
     });
 
     it('should maintain backward compatibility without cards', () => {
-      // Правильная структура данных для Яндекс.Диалогов
-      const mockAliceData = {
-        state: {
-          session: {
-            data: mockSessionDataLastQuestion
-          }
-        }
-      };
-      
       // Проверяем, что ответы работают даже если карточки не поддерживаются
-      const response = controller.answerYes(mockAliceData);
+      const response = controller.answerYes(mockSessionDataLastQuestion);
       
       expect(response.response.text).toBeDefined();
       expect(response.response.text.length).toBeGreaterThan(0);
@@ -168,17 +150,8 @@ describe('AliceController (Cards Tests)', () => {
     });
 
     it('should have proper card structure for voice-only devices', () => {
-      // Правильная структура данных для Яндекс.Диалогов
-      const mockAliceData = {
-        state: {
-          session: {
-            data: mockSessionDataLastQuestion
-          }
-        }
-      };
-      
       // Карточки должны быть опциональными для голосовых устройств
-      const response = controller.answerYes(mockAliceData);
+      const response = controller.answerYes(mockSessionDataLastQuestion);
       
       // Основная функциональность должна работать без карточек
       expect(response.response.text).toContain('Спасибо за ответы');
@@ -187,16 +160,7 @@ describe('AliceController (Cards Tests)', () => {
     });
 
     it('should create results card with proper footer', () => {
-      // Правильная структура данных для Яндекс.Диалогов
-      const mockAliceData = {
-        state: {
-          session: {
-            data: mockSessionDataLastQuestion
-          }
-        }
-      };
-      
-      const response = controller.answerYes(mockAliceData);
+      const response = controller.answerYes(mockSessionDataLastQuestion);
       const card = response.response.card as any;
       
       expect(card.footer.text).toContain('Результаты показывают');
@@ -224,24 +188,17 @@ describe('AliceController (Cards Tests)', () => {
     });
 
     it('should work without screen interface', () => {
-      // Правильная структура данных для Яндекс.Диалогов
-      const mockAliceData = {
-        state: {
-          session: {
-            data: {
-              currentQuestion: 24,
-              answers: Array.from({ length: 23 }, (_, i) => ({
-                questionId: i + 1,
-                score: 1
-              })),
-              state: 'testing' as const
-            }
-          }
-        }
+      const sessionData = {
+        currentQuestion: 24,
+        answers: Array.from({ length: 23 }, (_, i) => ({
+          questionId: i + 1,
+          score: 1
+        })),
+        state: 'testing' as const
       };
       
       // Симулируем устройство без экрана
-      const response = controller.answerYes(mockAliceData);
+      const response = controller.answerYes(sessionData);
       
       // Карточка может быть создана, но основной функционал должен работать
       expect(response.response.text).toBeDefined();

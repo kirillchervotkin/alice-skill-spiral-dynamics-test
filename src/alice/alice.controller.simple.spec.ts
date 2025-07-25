@@ -87,21 +87,21 @@ describe('AliceController (Simple Tests)', () => {
     };
 
     it('should handle yes answer', () => {
-      const response = controller.answerYes(mockAliceData);
+      const response = controller.answerYes(mockSessionData);
       
       expect(response).toBeDefined();
       expect(response.response.text).toContain('Вопрос 2 из 24');
     });
 
     it('should handle no answer', () => {
-      const response = controller.answerNo(mockAliceData);
+      const response = controller.answerNo(mockSessionData);
       
       expect(response).toBeDefined();
       expect(response.response.text).toContain('Вопрос 2 из 24');
     });
 
     it('should handle unsure answer', () => {
-      const response = controller.answerUnsure(mockAliceData);
+      const response = controller.answerUnsure(mockSessionData);
       
       expect(response).toBeDefined();
       expect(response.response.text).toContain('Вопрос 2 из 24');
@@ -135,7 +135,7 @@ describe('AliceController (Simple Tests)', () => {
     };
 
     it('should show results after last question', () => {
-      const response = controller.answerYes(mockAliceDataLastQuestion);
+      const response = controller.answerYes(mockSessionDataLastQuestion);
       
       expect(response).toBeDefined();
       expect(response.response.text).toContain('Спасибо за ответы!');

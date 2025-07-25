@@ -29,9 +29,19 @@ export class AliceController {
 
   // Обработчик неизвестных команд (когда нет совпадений с интентами)
   @Unknown()
-  unknownHandler(@Data() data: any): AliceResponse {
+  unknownHandler(data: any): AliceResponse {
     const command = data?.request?.command?.toLowerCase() || '';
     const intents = data?.request?.nlu?.intents || {};
+    const isNewSession = data?.session?.new === true;
+    
+    console.log(`🔍 UNKNOWN HANDLER: command="${command}", new=${isNewSession}`);
+    console.log(`📊 Full data:`, JSON.stringify(data, null, 2));
+    
+    // Если это новая сессия с пустой командой - показываем приветствие
+    if (isNewSession && command === '') {
+      console.log(`✅ New session with empty command - showing welcome`);
+      return this.startWelcome();
+    }
     
     // Проверяем команды "опиши [цвет]"
     if (command.includes('опиши')) {
@@ -98,7 +108,7 @@ export class AliceController {
       return this.describeLevel(data);
     }
     
-    console.log(`UNKNOWN HANDLER: data=`, JSON.stringify(data, null, 2));
+    console.log(`❌ UNKNOWN HANDLER: Unhandled case, showing welcome`);
     return this.startWelcome();
   }
 
@@ -196,7 +206,7 @@ export class AliceController {
     
     const { state, currentQuestion } = data || {};
     
-    console.log(`� Statie: ${state}, Current Question: ${currentQuestion}`);
+    console.log(`� State: ${state}, Current Question: ${currentQuestion}`);
 
     // Если в состоянии приветствия, переадресуем на согласие начать тест
     if (state === 'welcome') {
@@ -379,7 +389,7 @@ export class AliceController {
   // Описание уровня
   @Intent('spiral.describe')
   @Intent('spiral.details') // Добавляем интент для кнопки "Подробнее"
-  describeLevel(@Data() data: any): AliceResponse {
+  describeLevel(data: any): AliceResponse {
     console.log(`\n🚨🚨🚨 DESCRIBE LEVEL CALLED! 🚨🚨🚨`);
     console.log(`⏱️ DESCRIBE START`);
     console.log(`� Full srequest data:`, JSON.stringify(data, null, 2));
@@ -412,9 +422,13 @@ export class AliceController {
     const topLevel = results.top3[0];
     const description = this.spiralService.getLevelDescription(topLevel.level);
 
+    // Создаем BigImage карточку для описания уровня
+    const levelCard = this.createLevelDescriptionCard(topLevel, description);
+
     return new SkillResponseBuilder(
       `Подробнее о вашем доминирующем уровне:\n\n${topLevel.fullName}\n\n${description}\n\nВаш результат: ${topLevel.score} баллов`
     )
+      .setCard(levelCard)
       .setButtons([
         { title: "Повтори результаты", hide: false },
         { title: "Заново", hide: false }
@@ -803,6 +817,21 @@ export class AliceController {
         .setData(sessionData)
         .build();
     }
+  }
+
+  /**
+   * Создает BigImage карточку для описания уровня
+   */
+  private createLevelDescriptionCard(levelResult: any, description: string) {
+    return BigImageCardBuilder.create()
+      .setImageId(this.getLevelImageId(levelResult.level))
+      .setTitle(`${levelResult.fullName}`)
+      .setDescription(`${description}\n\nВаш результат: ${levelResult.score} баллов - ${levelResult.interpretation}`)
+      .setButton({
+        title: "Вернуться к результатам",
+        hide: false
+      })
+      .build();
   }
 
   /**
