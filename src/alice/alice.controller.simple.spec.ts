@@ -21,7 +21,7 @@ describe('AliceController (Simple Tests)', () => {
 
   describe('Basic functionality', () => {
     it('should return welcome message', () => {
-      const response = controller.defaultHandler({}, { body: { request: { command: '', nlu: { intents: {} } } } });
+      const response = controller.defaultHandler({});
       
       expect(response).toBeDefined();
       expect(response.response).toBeDefined();

@@ -1,4 +1,4 @@
-import { Controller, Req } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import {
   Intent,
   Data,
@@ -28,70 +28,8 @@ export class AliceController {
 
   // Базовый обработчик для всех запросов (когда интент не определен)
   @Intent()
-  defaultHandler(@Data() data: any, @Req() req: any): AliceResponse {
+  defaultHandler(@Data() data: any): AliceResponse {
     console.log(`DEFAULT HANDLER: data=`, JSON.stringify(data, null, 2));
-
-    const command = req?.body?.request?.command?.toLowerCase() || '';
-    const intents = req?.body?.request?.nlu?.intents || {};
-
-    // Проверяем команды "опиши [цвет]"
-    if (command.includes('опиши')) {
-      const { results } = data;
-
-      // Определяем цвет из команды (поддерживаем русские и английские названия)
-      let requestedLevel = null;
-      if (command.includes('красный') || command.includes('red')) requestedLevel = 'red';
-      else if (command.includes('желтый') || command.includes('yellow')) requestedLevel = 'yellow';
-      else if (command.includes('зеленый') || command.includes('green')) requestedLevel = 'green';
-      else if (command.includes('синий') || command.includes('blue')) requestedLevel = 'blue';
-      else if (command.includes('оранжевый') || command.includes('orange')) requestedLevel = 'orange';
-      else if (command.includes('фиолетовый') || command.includes('purple')) requestedLevel = 'purple';
-      else if (command.includes('бежевый') || command.includes('beige')) requestedLevel = 'beige';
-      else if (command.includes('бирюзовый') || command.includes('turquoise')) requestedLevel = 'turquoise';
-
-      if (requestedLevel && results) {
-        // Показываем описание конкретного цвета
-        try {
-          console.log(`🎨 Trying to describe level: ${requestedLevel}`);
-          return this.describeSpecificLevel(requestedLevel, results, data);
-        } catch (error) {
-          console.error(`❌ Error in describeSpecificLevel:`, error);
-          return new SkillResponseBuilder(
-            `Ошибка при получении описания ${requestedLevel}. Попробуй "подробнее" для общего описания.`
-          )
-            .setButtons([
-              { title: "Подробнее", hide: false },
-              { title: "Повтори результаты", hide: false },
-              { title: "Заново", hide: false }
-            ])
-            .setData(data)
-            .build();
-        }
-      } else if (results) {
-        // Показываем доминирующий уровень
-        const topLevel = results.top3[0];
-        const description = this.spiralService.getLevelDescription(topLevel.level);
-        return new SkillResponseBuilder(
-          `Подробнее о вашем доминирующем уровне:\n\n${topLevel.fullName}\n\n${description}\n\nВаш результат: ${topLevel.score} баллов`
-        )
-          .setButtons([
-            { title: "Повтори результаты", hide: false },
-            { title: "Заново", hide: false }
-          ])
-          .setData(data)
-          .build();
-      } else {
-        return new SkillResponseBuilder('Сначала пройди тест, чтобы узнать свои результаты.')
-          .setButtons([{ title: "Заново", hide: true }])
-          .build();
-      }
-    }
-
-    // Проверяем, есть ли интент spiral.describe
-    if (intents['spiral.describe']) {
-      return this.describeLevel(data);
-    }
-
     return this.startWelcome();
   }
 
@@ -478,6 +416,47 @@ export class AliceController {
       .build();
   }
 
+  // Интенты для описания конкретных цветов
+  @Intent('spiral.describe.red')
+  describeRed(@Data() data: any): AliceResponse {
+    return this.describeSpecificLevel('red', data.results, data);
+  }
+
+  @Intent('spiral.describe.blue')
+  describeBlue(@Data() data: any): AliceResponse {
+    return this.describeSpecificLevel('blue', data.results, data);
+  }
+
+  @Intent('spiral.describe.orange')
+  describeOrange(@Data() data: any): AliceResponse {
+    return this.describeSpecificLevel('orange', data.results, data);
+  }
+
+  @Intent('spiral.describe.green')
+  describeGreen(@Data() data: any): AliceResponse {
+    return this.describeSpecificLevel('green', data.results, data);
+  }
+
+  @Intent('spiral.describe.yellow')
+  describeYellow(@Data() data: any): AliceResponse {
+    return this.describeSpecificLevel('yellow', data.results, data);
+  }
+
+  @Intent('spiral.describe.turquoise')
+  describeTurquoise(@Data() data: any): AliceResponse {
+    return this.describeSpecificLevel('turquoise', data.results, data);
+  }
+
+  @Intent('spiral.describe.purple')
+  describePurple(@Data() data: any): AliceResponse {
+    return this.describeSpecificLevel('purple', data.results, data);
+  }
+
+  @Intent('spiral.describe.beige')
+  describeBeige(@Data() data: any): AliceResponse {
+    return this.describeSpecificLevel('beige', data.results, data);
+  }
+
   // Обработка ошибок распознавания во время теста
   @Intent('spiral.error')
   handleError(@Data() data: any): AliceResponse {
@@ -738,7 +717,7 @@ export class AliceController {
       // Маппинг строк к enum SpiralLevel
       const levelMap: Record<string, string> = {
         'red': 'red',
-        'blue': 'blue', 
+        'blue': 'blue',
         'orange': 'orange',
         'green': 'green',
         'yellow': 'yellow',
