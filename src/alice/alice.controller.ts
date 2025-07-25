@@ -29,24 +29,24 @@ export class AliceController {
 
   // Обработчик неизвестных команд (когда нет совпадений с интентами)
   @Unknown()
-  unknownHandler(data: any): AliceResponse {
-    const command = data?.request?.command?.toLowerCase() || '';
-    const intents = data?.request?.nlu?.intents || {};
-    const isNewSession = data?.session?.new === true;
+  unknownHandler(fullRequest: any): AliceResponse {
+    const command = fullRequest?.request?.command?.toLowerCase() || '';
+    const intents = fullRequest?.request?.nlu?.intents || {};
+    const isNewSession = fullRequest?.session?.new === true;
+    const sessionData = fullRequest?.state?.session?.data || {};
     
     console.log(`🔍 UNKNOWN HANDLER: command="${command}", new=${isNewSession}`);
-    console.log(`📊 Full data:`, JSON.stringify(data, null, 2));
+    console.log(`📊 Session data:`, JSON.stringify(sessionData, null, 2));
+    console.log(`📊 Full request:`, JSON.stringify(fullRequest, null, 2));
     
-    // Если это новая сессия с пустой командой - показываем приветствие
-    if (isNewSession && command === '') {
-      console.log(`✅ New session with empty command - showing welcome`);
+    // Если это новая сессия с пустой командой ИЛИ данные сессии пустые - показываем приветствие
+    if ((isNewSession && command === '') || !sessionData || Object.keys(sessionData).length === 0) {
+      console.log(`✅ New session or empty data - showing welcome`);
       return this.startWelcome();
     }
     
     // Проверяем команды "опиши [цвет]"
     if (command.includes('опиши')) {
-      // В @Unknown data содержит полную структуру запроса от Яндекс.Диалогов
-      const sessionData = data?.state?.session?.data || {};
       const { results } = sessionData;
       
       console.log(`🎨 Unknown handler: опиши command detected`);
@@ -105,7 +105,7 @@ export class AliceController {
     
     // Проверяем, есть ли интент spiral.describe
     if (intents['spiral.describe']) {
-      return this.describeLevel(data);
+      return this.describeLevel(fullRequest);
     }
     
     console.log(`❌ UNKNOWN HANDLER: Unhandled case, showing welcome`);
