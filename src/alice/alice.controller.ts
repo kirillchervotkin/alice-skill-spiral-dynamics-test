@@ -24,20 +24,20 @@ export class AliceController {
   constructor(
     private readonly spiralService: SpiralDynamicsService,
     private readonly questionsService: QuestionsService
-  ) {}
+  ) { }
 
   // Базовый обработчик для всех запросов (когда интент не определен)
   @Intent()
   defaultHandler(@Data() data: any, @Req() req: any): AliceResponse {
     console.log(`DEFAULT HANDLER: data=`, JSON.stringify(data, null, 2));
-    
+
     const command = req?.body?.request?.command?.toLowerCase() || '';
     const intents = req?.body?.request?.nlu?.intents || {};
-    
+
     // Проверяем команды "опиши [цвет]"
     if (command.includes('опиши')) {
       const { results } = data;
-      
+
       // Определяем цвет из команды
       let requestedLevel = null;
       if (command.includes('красный')) requestedLevel = 'red';
@@ -48,7 +48,7 @@ export class AliceController {
       else if (command.includes('фиолетовый')) requestedLevel = 'purple';
       else if (command.includes('бежевый')) requestedLevel = 'beige';
       else if (command.includes('бирюзовый')) requestedLevel = 'turquoise';
-      
+
       if (requestedLevel && results) {
         // Показываем описание конкретного цвета
         try {
@@ -86,12 +86,12 @@ export class AliceController {
           .build();
       }
     }
-    
+
     // Проверяем, есть ли интент spiral.describe
     if (intents['spiral.describe']) {
       return this.describeLevel(data);
     }
-    
+
     return this.startWelcome();
   }
 
@@ -123,7 +123,7 @@ export class AliceController {
   agreeToStart(@Data() data: any): AliceResponse {
     console.log(`🎯 AGREE TO START CALLED`);
     console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
-    
+
     const { state } = data;
     console.log(`🔄 Current state:`, state);
 
@@ -145,7 +145,7 @@ export class AliceController {
   exit(@Data() data: any): AliceResponse {
     console.log(`⏱️ SPIRAL.NO START`);
     console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
-    
+
     const { state, currentQuestion } = data;
     console.log(`🔄 State: ${state}, Current Question: ${currentQuestion}`);
 
@@ -186,7 +186,7 @@ export class AliceController {
   answerYes(@Data() data: any): AliceResponse {
     console.log(`⏱️ ANSWER YES START`);
     console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
-    
+
     const { state, currentQuestion } = data;
     console.log(`🔄 State: ${state}, Current Question: ${currentQuestion}`);
 
@@ -222,7 +222,7 @@ export class AliceController {
   answerNo(@Data() data: any): AliceResponse {
     console.log(`⏱️ ANSWER NO START`);
     console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
-    
+
     const { state, currentQuestion } = data;
     console.log(`🔄 State: ${state}, Current Question: ${currentQuestion}`);
 
@@ -258,7 +258,7 @@ export class AliceController {
   answerUnsure(@Data() data: any): AliceResponse {
     console.log(`⏱️ ANSWER UNSURE START`);
     console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
-    
+
     const { state, currentQuestion } = data;
     console.log(`🔄 State: ${state}, Current Question: ${currentQuestion}`);
 
@@ -283,16 +283,16 @@ export class AliceController {
   repeatQuestion(@Data() data: any): AliceResponse {
     console.log(`⏱️ REPEAT START`);
     console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
-    
+
     const { currentQuestion = 1 } = data;
     const question = this.questionsService.getQuestion(currentQuestion);
-    
+
     if (!question) {
       return new SkillResponseBuilder('Ошибка: вопрос не найден. Начнем заново?')
         .setButtons([{ title: "Заново", hide: true }])
         .build();
     }
-    
+
     return new SkillResponseBuilder(
       `Вопрос ${currentQuestion} из 24: ${question.text}`
     )
@@ -310,7 +310,7 @@ export class AliceController {
   pauseTest(@Data() data: any): AliceResponse {
     console.log(`⏱️ PAUSE START`);
     console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
-    
+
     const { currentQuestion = 1, answers = [] } = data;
 
     return new SkillResponseBuilder(
@@ -335,7 +335,7 @@ export class AliceController {
   continueTest(@Data() data: any): AliceResponse {
     console.log(`⏱️ CONTINUE START`);
     console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
-    
+
     const { currentQuestion = 1, state } = data;
 
     if (state !== 'paused') {
@@ -375,22 +375,22 @@ export class AliceController {
     console.log(`\n🚨🚨🚨 DESCRIBE LEVEL CALLED! 🚨🚨🚨`);
     console.log(`⏱️ DESCRIBE START`);
     console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
-    
+
     const { results } = data;
-    
+
     // Определяем, какой уровень запрашивается из интента
     const requestedLevel = this.getRequestedLevelFromIntent(data);
     console.log(`🎨 Requested level: ${requestedLevel}`);
-    
+
     if (requestedLevel) {
       console.log(`✅ Found specific level: ${requestedLevel}, calling describeSpecificLevel`);
       // Если запрашивается конкретный цвет, показываем его описание
       return this.describeSpecificLevel(requestedLevel, results, data);
     }
-    
+
     console.log(`❌ No specific level found, showing dominant level`);
     console.log(`📋 Results:`, JSON.stringify(results, null, 2));
-    
+
     // Если интент общий, показываем описание доминирующего уровня
     if (!results) {
       return new SkillResponseBuilder('Сначала пройди тест, чтобы узнать свои результаты.')
@@ -417,7 +417,7 @@ export class AliceController {
   repeatResults(@Data() data: any): AliceResponse {
     console.log(`⏱️ REPEAT RESULTS START`);
     console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
-    
+
     const { results } = data;
     if (!results) {
       return new SkillResponseBuilder('Сначала пройди тест, чтобы узнать свои результаты.')
@@ -441,7 +441,7 @@ export class AliceController {
   sendResults(@Data() data: any): AliceResponse {
     console.log(`⏱️ SEND START`);
     console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
-    
+
     const { results } = data;
 
     if (!results) {
@@ -483,7 +483,7 @@ export class AliceController {
   handleError(@Data() data: any): AliceResponse {
     console.log(`⏱️ ERROR START`);
     console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
-    
+
     const { currentQuestion = 1, state } = data;
 
     if (state === 'testing') {
@@ -516,7 +516,7 @@ export class AliceController {
     const helpButton: Button = { title: "Помощь", hide: false };
     const startButton: Button = { title: "Да", hide: true };
     const noButton: Button = { title: "Нет", hide: true };
-    
+
     return new SkillResponseBuilder(
       'Привет! Я помогу тебе определить твой ведущий уровень ценностей по модели Спиральной динамики. ' +
       'Ответы помогу понять, из каких ценностей ты выбираешь действовать здесь и сейчас.\n\n' +
@@ -579,7 +579,7 @@ export class AliceController {
     }
 
     console.log(`Showing question ${nextQuestion}`);
-    
+
     const responseData = {
       currentQuestion: nextQuestion,
       answers: newAnswers,
@@ -688,9 +688,9 @@ export class AliceController {
   private getRequestedLevelFromIntent(data: any): string | null {
     // Проверяем текст команды на наличие названий цветов
     const command = data?.request?.command?.toLowerCase() || '';
-    
+
     console.log(`🔍 Analyzing command: "${command}"`);
-    
+
     if (command.includes('бежевый') || command.includes('beige')) {
       console.log(`✅ Found beige in command`);
       return 'beige';
@@ -723,7 +723,7 @@ export class AliceController {
       console.log(`✅ Found turquoise in command`);
       return 'turquoise';
     }
-    
+
     console.log(`❌ No color found in command`);
     return null;
   }
@@ -734,27 +734,48 @@ export class AliceController {
   private describeSpecificLevel(level: string, results: TestResult | undefined, sessionData: any): AliceResponse {
     try {
       console.log(`🎨 describeSpecificLevel called with level: ${level}`);
-      
+
+      // Маппинг строк к enum SpiralLevel
+      const levelMap: Record<string, string> = {
+        'red': 'red',
+        'blue': 'blue', 
+        'orange': 'orange',
+        'green': 'green',
+        'yellow': 'yellow',
+        'turquoise': 'turquoise',
+        'purple': 'purple',
+        'beige': 'beige'
+      };
+
+      const spiralLevel = levelMap[level];
+      if (!spiralLevel) {
+        console.error(`❌ Unknown level: ${level}`);
+        return new SkillResponseBuilder(`Неизвестный уровень: ${level}`)
+          .setButtons([{ title: "Заново", hide: false }])
+          .setData(sessionData)
+          .build();
+      }
+
       // Безопасное получение описания
       let description = '';
       let levelMeta = '';
-      
+
       try {
-        description = this.spiralService.getLevelDescription(level as any);
+        description = this.spiralService.getLevelDescription(spiralLevel as any);
         console.log(`✅ Got description: ${description.substring(0, 50)}...`);
       } catch (error) {
         console.error(`❌ Error getting description:`, error);
         description = 'Описание временно недоступно.';
       }
-      
+
       try {
-        levelMeta = this.spiralService.getLevelFullName(level as any);
+        levelMeta = this.spiralService.getLevelFullName(spiralLevel as any);
         console.log(`✅ Got level meta: ${levelMeta}`);
       } catch (error) {
         console.error(`❌ Error getting level meta:`, error);
         levelMeta = `Уровень ${level}`;
       }
-      
+
       // Если есть результаты теста, показываем балл пользователя для этого уровня
       let userScore = '';
       if (results && results.allScores) {
@@ -775,7 +796,7 @@ export class AliceController {
         ])
         .setData(sessionData)
         .build();
-        
+
     } catch (error) {
       console.error(`❌ Critical error in describeSpecificLevel:`, error);
       return new SkillResponseBuilder(
