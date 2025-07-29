@@ -1,43 +1,11 @@
-import { Controller, OnModuleInit } from '@nestjs/common';
-import { RegexIntent } from '../decorators/regex-intent.decorator';
-import { RegexIntentService } from '../services/regex-intent.service';
+import { Controller } from '@nestjs/common';
 import { SkillResponseBuilder, AliceResponse } from '@kirillchervotkin/alice-nestjs-framework';
 
 @Controller()
-export class AliceRegexController implements OnModuleInit {
-  constructor(private readonly regexService: RegexIntentService) {}
-
-  onModuleInit() {
-    // Регистрируем все regex-обработчики при инициализации модуля
-    this.registerRegexHandlers();
-  }
-
-  private registerRegexHandlers() {
-    // Получаем все методы с декоратором @RegexIntent
-    const prototype = Object.getPrototypeOf(this);
-    const methodNames = Object.getOwnPropertyNames(prototype);
-
-    for (const methodName of methodNames) {
-      const method = prototype[methodName];
-      if (typeof method === 'function') {
-        const regexOptions = Reflect.getMetadata('regex_intent', method);
-        if (regexOptions) {
-          const pattern = typeof regexOptions.pattern === 'string' 
-            ? new RegExp(regexOptions.pattern, 'i') 
-            : regexOptions.pattern;
-          
-          this.regexService.registerHandler(this, methodName, pattern, regexOptions);
-        }
-      }
-    }
-  }
+export class AliceRegexController {
+  constructor() {}
 
   // Обработка чисел (например, "покажи вопрос 5")
-  @RegexIntent({
-    pattern: /(?:вопрос|номер|показать)\s*(\d+)/i,
-    priority: 10,
-    description: 'Переход к конкретному вопросу по номеру'
-  })
   handleQuestionNumber(_context: any, matches: RegExpMatchArray): AliceResponse {
     const questionNumber = parseInt(matches[1]);
     
@@ -52,14 +20,7 @@ export class AliceRegexController implements OnModuleInit {
     ).build();
   }
 
-
-
   // Обработка процентов и результатов
-  @RegexIntent({
-    pattern: /(?:мой|результат|процент|балл)\s*(?:по|для)?\s*(красный|синий|зеленый|желтый|оранжевый|фиолетовый|бирюзовый|бежевый)/i,
-    priority: 9,
-    description: 'Показ результата по конкретному цвету'
-  })
   handleColorResult(_context: any, matches: RegExpMatchArray): AliceResponse {
     const color = matches[1].toLowerCase();
     
@@ -69,11 +30,6 @@ export class AliceRegexController implements OnModuleInit {
   }
 
   // Обработка временных фраз
-  @RegexIntent({
-    pattern: /(через|после|потом|позже)\s+(\d+)\s*(минут|часов|секунд)/i,
-    priority: 5,
-    description: 'Отложенные действия'
-  })
   handleDelayedAction(_context: any, matches: RegExpMatchArray): AliceResponse {
     const time = matches[2];
     const unit = matches[3];
@@ -84,11 +40,6 @@ export class AliceRegexController implements OnModuleInit {
   }
 
   // Обработка сравнений
-  @RegexIntent({
-    pattern: /(сравни|различия|разница)\s+(красный|синий|зеленый|желтый|оранжевый|фиолетовый|бирюзовый|бежевый)\s+(?:и|с)\s+(красный|синий|зеленый|желтый|оранжевый|фиолетовый|бирюзовый|бежевый)/i,
-    priority: 7,
-    description: 'Сравнение двух уровней'
-  })
   handleColorComparison(_context: any, matches: RegExpMatchArray): AliceResponse {
     const color1 = matches[2].toLowerCase();
     const color2 = matches[4].toLowerCase();
@@ -99,11 +50,6 @@ export class AliceRegexController implements OnModuleInit {
   }
 
   // Обработка эмоциональных состояний
-  @RegexIntent({
-    pattern: /(я\s+)?(устал|устала|скучно|интересно|сложно|легко|понятно|непонятно)/i,
-    priority: 6,
-    description: 'Реакция на эмоциональное состояние пользователя'
-  })
   handleEmotionalState(_context: any, matches: RegExpMatchArray): AliceResponse {
     const emotion = matches[2].toLowerCase();
     
@@ -124,11 +70,6 @@ export class AliceRegexController implements OnModuleInit {
   }
 
   // Fallback для неопознанных фраз с ключевыми словами
-  @RegexIntent({
-    pattern: /(спиральная|динамика|ценности|уровень|тест|психология)/i,
-    priority: 1,
-    description: 'Общие фразы о спиральной динамике'
-  })
   handleGeneralSpiral(_context: any, _matches: RegExpMatchArray): AliceResponse {
     return new SkillResponseBuilder(
       'Я вижу, вы интересуетесь спиральной динамикой. Что именно хотите узнать? ' +
