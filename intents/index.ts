@@ -1,6 +1,7 @@
 // Автоматически сгенерированный индекс интентов
 
 export { yandexHelp, tests as yandexHelpTests } from './YANDEX.HELP';
+// export { spiralAbout, tests as spiralAboutTests } from './spiral.about'; // Работает как fallback
 export { restart, tests as restartTests } from './restart';
 export { spiralAnswerNo, tests as spiralAnswerNoTests } from './spiral.answer.no';
 export { spiralAnswerUnsure, tests as spiralAnswerUnsureTests } from './spiral.answer.unsure';
@@ -28,6 +29,7 @@ export { spiralYes, tests as spiralYesTests } from './spiral.yes';
 // Список всех интентов
 export const ALL_INTENTS = [
   'YANDEX.HELP',
+  // 'spiral.about', // Работает как fallback, не как интент
   'restart',
   'spiral.answer.no',
   'spiral.answer.unsure',

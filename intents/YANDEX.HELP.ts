@@ -28,17 +28,22 @@ root:
 slots:
 */
 
-@RegexIntent({
-    pattern: /(помощь|что\s+ты\s+умеешь|как\s+пользоваться|инструкция|справка)/i,
-    priority: 10,
-    description: 'Помощь'
-})
+// Паттерн: /(помощь|что\s+ты\s+умеешь|как\s+пользоваться|инструкция|справка)/i
+// Приоритет: 10
 export function yandexHelp(_context: any, matches: RegExpMatchArray): AliceResponse {
-    // TODO: Реализовать логику для YANDEX.HELP
-
+    const command = matches[0].toLowerCase();
+    
+    // Для всех запросов помощи - краткий ответ
     return new SkillResponseBuilder(
-        'Обработка интента: YANDEX.HELP'
-    ).build();
+        'Привет! Я помогу разобраться с навыком. ' +
+        'Чтобы узнать подробности о навыке, скажите "о навыке". ' +
+        'Чтобы начать тест, скажите "начать тест".'
+    )
+      .setButtons([
+        { title: "О навыке", hide: true },
+        { title: "Начать тест", hide: true }
+      ])
+      .build();
 }
 
 // Тесты

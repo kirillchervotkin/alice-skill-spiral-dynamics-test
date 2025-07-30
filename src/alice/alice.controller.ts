@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Post } from '@nestjs/common';
 import {
   Intent,
   Data,
@@ -21,32 +21,208 @@ interface SessionData {
 
 @Controller()
 export class AliceController {
+
   constructor(
     private readonly spiralService: SpiralDynamicsService,
     private readonly questionsService: QuestionsService
   ) { }
 
   // Базовый обработчик для всех запросов (когда интент не определен)
+  @Post()
   @Intent()
   defaultHandler(@Data() data: any): AliceResponse {
+    console.log(`🚀 DEFAULT HANDLER STARTED - SERVER IS RUNNING WITH NEW CODE`);
+    console.log(`DEFAULT HANDLER: typeof data=`, typeof data);
     console.log(`DEFAULT HANDLER: data=`, JSON.stringify(data, null, 2));
-    return this.startWelcome();
+    console.log(`DEFAULT HANDLER: data.request=`, data?.request);
+    console.log(`DEFAULT HANDLER: command=`, data?.request?.command);
+    console.log(`DEFAULT HANDLER: original_utterance=`, data?.request?.original_utterance);
+    
+    // Экстренная проверка удалена - обработка через интент spiral.about или defaultHandler
+    
+    try {
+      // Защита от пустых данных
+      if (!data || !data.request) {
+        console.log(`⚠️ Empty data received, returning welcome`);
+        return this.startWelcome();
+      }
+      
+      // Проверка на пустые команды
+      if ((!data.request.command || data.request.command.trim() === '') && 
+          (!data.request.original_utterance || data.request.original_utterance.trim() === '')) {
+        console.log(`⚠️ Empty command/utterance - returning welcome`);
+        return this.startWelcome();
+      }
+      
+      // Проверяем команду пользователя
+      const command = data?.request?.command?.toLowerCase() || '';
+      const originalText = data?.request?.original_utterance || '';
+      const nlu = data?.request?.nlu?.tokens?.join(' ') || '';
+      console.log(`🔍 User command: "${command}"`);
+      console.log(`🔍 Original utterance: "${originalText}"`);
+      console.log(`🔍 NLU tokens: "${nlu}"`);
+      console.log(`📋 Full request:`, JSON.stringify(data?.request, null, 2));
+      
+      // ПРОВЕРЯЕМ ТОЧНОЕ СОВПАДЕНИЕ
+      if (originalText === 'расскажи о навыке') {
+        console.log(`🎯 EXACT MATCH for "расскажи о навыке" - calling aboutSkill directly`);
+        return this.aboutSkill(data);
+      }
+      
+      // Собираем все возможные варианты текста для проверки
+      const textsToCheck = [
+        command,
+        originalText,
+        nlu,
+        originalText.toLowerCase(),
+        // Проверим и без нормализации
+        data?.request?.command || '',
+        data?.request?.original_utterance || ''
+      ].filter(text => text && text.trim().length > 0);
+      
+      console.log(`🔍 Texts to check:`, textsToCheck);
+      
+      // Проверяем каждый вариант текста на соответствие паттернам
+      for (const textToCheck of textsToCheck) {
+        console.log(`🔍 Checking text: "${textToCheck}"`);
+        
+        // Проверяем "о навыке" и "расскажи о навыке" отдельно (приоритетнее помощи) - с учетом опечаток
+        const aboutPattern = /(о\s+навы?к[еи]?|что\s+может\s+навык|возможности\s+навыка|функции\s+навыка|что\s+можешь\s+делать|расскажи\s+(о\s+)?навы?к[еи]?|описание\s+навыка|информация\s+о\s+навыке|про\s+навык)/i;
+        const aboutMatch = textToCheck.match(aboutPattern);
+        
+        if (aboutMatch) {
+          console.log(`🎯 About pattern matched: "${aboutMatch[0]}" - calling aboutSkill()`);
+          try {
+            const result = this.aboutSkill(data);
+            console.log(`✅ aboutSkill() result:`, JSON.stringify(result, null, 2));
+            console.log(`✅ aboutSkill() type:`, typeof result);
+            return result;
+          } catch (error) {
+            console.error(`❌ Error in aboutSkill():`, error);
+            console.error(`❌ Error stack:`, error instanceof Error ? error.stack : 'Unknown error');
+            const errorResponse = new SkillResponseBuilder('Извините, произошла ошибка. Попробуйте спросить "что ты умеешь".')
+              .setButtons([{ title: "Что ты умеешь", hide: true }])
+              .build();
+            console.log(`✅ Error response built:`, JSON.stringify(errorResponse, null, 2));
+            return errorResponse;
+          }
+        }
+
+        // Паттерн для общих команд помощи
+        const helpPattern = /(помощь|как\s+пользоваться|инструкция|справка)/i;
+        const helpMatch = textToCheck.match(helpPattern);
+        
+        if (helpMatch) {
+          console.log(`✅ Help pattern matched: "${helpMatch[0]}"`);
+          
+          // Для команд помощи - краткий ответ
+          console.log(`🎯 General help - returning brief response`);
+          return new SkillResponseBuilder(
+            'Привет! Я помогу определить ваши ценности. ' +
+            'Скажите "о навыке" для подробной информации или "начать тест" чтобы сразу начать.'
+          )
+            .setButtons([
+              { title: "О навыке", hide: true },
+              { title: "Начать тест", hide: true }
+            ])
+            .build();
+        }
+      }
+      
+      // Fallback: старая логика (убрана, так как about() больше нет)
+      // if (this.isAboutSkillCommand(command) || this.isAboutSkillCommand(originalText.toLowerCase())) {
+      //   console.log(`✅ Detected "about skill" command (fallback)`);
+      //   return this.about();
+      // }
+      
+      console.log(`🔄 No patterns matched, returning startWelcome()`);
+      const welcomeResult = this.startWelcome();
+      console.log(`✅ startWelcome() result:`, JSON.stringify(welcomeResult, null, 2));
+      return welcomeResult;
+    
+    } catch (error) {
+      console.error(`❌ Error in defaultHandler:`, error);
+      console.error(`❌ Error stack:`, error instanceof Error ? error.stack : 'Unknown error');
+      const errorResponse = new SkillResponseBuilder('Извините, произошла ошибка. Скажите "начать тест" для начала.')
+        .setButtons([
+          { title: "Начать тест", hide: true }
+        ])
+        .build();
+      console.log(`✅ Error response in catch:`, JSON.stringify(errorResponse, null, 2));
+      return errorResponse;
+    }
+  }
+  
+  // Проверка, является ли команда запросом о навыке (только fallback паттерны)
+  private isAboutSkillCommand(command: string): boolean {
+    const aboutPatterns = [
+      /about/i,
+      /help/i,
+      /info/i
+    ];
+    
+    return aboutPatterns.some(pattern => pattern.test(command));
   }
 
-  // Обработчик помощи
-  @Intent('YANDEX.HELP')
-  help(): AliceResponse {
+  // Обработчик помощи (объединенный) - УБРАН, интент удален в консоли
+  // @Intent('YANDEX.HELP')
+  // help(@Data() data: any): AliceResponse {
+  //   console.log(`🎯 YANDEX.HELP INTENT TRIGGERED`);
+  //   // Вся логика перенесена в defaultHandler
+  // }
+
+  // Обработчик "Что ты умеешь"
+  @Intent('YANDEX.WHAT_CAN_YOU_DO')
+  whatCanYouDo(@Data() data: any): AliceResponse {
+    console.log(`🎯 YANDEX.WHAT_CAN_YOU_DO INTENT TRIGGERED`);
     return new SkillResponseBuilder(
-      'Тест покажет, какие ценности сейчас важнее для тебя: выживание, традиции, власть, ' +
-      'порядок, успех, гармония, гибкость или глобальное мышление. Просто отвечай честно. ' +
-      'Готов начать?'
+      'Я умею:\n' +
+      '• Проводить тест на определение ценностей\n' +
+      '• Показывать ваши ТОП-3 уровня\n' +
+      '• Давать подробные описания каждого уровня\n' +
+      '• Объяснять результаты с баллами\n' +
+      '• Ставить тест на паузу и продолжать\n' +
+      '• Повторять вопросы и результаты\n\n' +
+      'Хотите начать тест?'
     )
       .setButtons([
-        { title: "Да", hide: true },
-        { title: "Нет", hide: true }
+        { title: "Начать тест", hide: true },
+        { title: "О навыке", hide: true }
       ])
-      .setData({ state: 'welcome' })
       .build();
+  }
+
+  // Обработчик "О навыке" (подробный)
+  @Intent('spiral.about') 
+  aboutSkill(@Data() data: any): AliceResponse {
+    console.log(`🎯 ABOUT_SKILL METHOD CALLED`);
+    console.log(`📊 Data received:`, JSON.stringify(data, null, 2));
+    
+    try {
+      console.log(`🔨 Creating SkillResponseBuilder...`);
+      const response = new SkillResponseBuilder(
+        'Я - навык для определения ваших ценностей по модели Спиральной динамики. ' +
+        'Проведу тест из 24 вопросов и покажу ваши ТОП-3 уровня ценностей. ' +
+        'Для каждого уровня дам подробное описание и объясню, что означают ваши баллы. ' +
+        'Хотите пройти тест?'
+      )
+        .setButtons([
+          { title: "Пройти тест", hide: true },
+          { title: "Позже", hide: true }
+        ])
+        .build();
+      
+      console.log(`✅ About skill response built successfully:`, JSON.stringify(response, null, 2));
+      console.log(`✅ Response type:`, typeof response);
+      return response;
+    } catch (error) {
+      console.error(`❌ Error building about skill response:`, error);
+      console.error(`❌ Error stack:`, error instanceof Error ? error.stack : 'Unknown error');
+      const errorResponse = new SkillResponseBuilder('Извините, произошла ошибка при получении информации о навыке.')
+        .build();
+      console.log(`✅ Error response in aboutSkill:`, JSON.stringify(errorResponse, null, 2));
+      return errorResponse;
+    }
   }
 
   // Начало теста
@@ -374,33 +550,33 @@ export class AliceController {
       .build();
   }
 
-  // Отправка результатов
-  @Intent('spiral.send')
-  sendResults(@Data() data: any): AliceResponse {
-    console.log(`⏱️ SEND START`);
-    console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
+  // Отправка результатов - ОТКЛЮЧЕНО
+  // @Intent('spiral.send')
+  // sendResults(@Data() data: any): AliceResponse {
+  //   console.log(`⏱️ SEND START`);
+  //   console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
 
-    const { results } = data;
+  //   const { results } = data;
 
-    if (!results) {
-      return new SkillResponseBuilder(
-        'Сначала пройди тест, чтобы получить результаты для отправки.'
-      )
-        .setButtons([{ title: "Заново", hide: false }])
-        .build();
-    }
+  //   if (!results) {
+  //     return new SkillResponseBuilder(
+  //       'Сначала пройди тест, чтобы получить результаты для отправки.'
+  //     )
+  //       .setButtons([{ title: "Заново", hide: false }])
+  //       .build();
+  //   }
 
-    return new SkillResponseBuilder(
-      'К сожалению, функция отправки пока не реализована. ' +
-      'Запиши свои результаты или сделай скриншот.'
-    )
-      .setButtons([
-        { title: "Повтори результаты", hide: false },
-        { title: "Заново", hide: false }
-      ])
-      .setData(data)
-      .build();
-  }
+  //   return new SkillResponseBuilder(
+  //     'К сожалению, функция отправки пока не реализована. ' +
+  //     'Запиши свои результаты или сделай скриншот.'
+  //   )
+  //     .setButtons([
+  //       { title: "Повтори результаты", hide: false },
+  //       { title: "Заново", hide: false }
+  //     ])
+  //     .setData(data)
+  //     .build();
+  // }
 
   // Начать заново
   @Intent('spiral.restart')
