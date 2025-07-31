@@ -164,12 +164,21 @@ export class AliceController {
     return aboutPatterns.some(pattern => pattern.test(command));
   }
 
-  // Обработчик помощи (объединенный) - УБРАН, интент удален в консоли
-  // @Intent('YANDEX.HELP')
-  // help(@Data() data: any): AliceResponse {
-  //   console.log(`🎯 YANDEX.HELP INTENT TRIGGERED`);
-  //   // Вся логика перенесена в defaultHandler
-  // }
+  // Обработчик помощи
+  @Intent('YANDEX.HELP')
+  help(@Data() data: any): AliceResponse {
+    console.log(`🎯 YANDEX.HELP INTENT TRIGGERED`);
+    
+    return new SkillResponseBuilder(
+      'Привет! Я помогу определить ваши ценности. ' +
+      'Скажите "о навыке" для подробной информации или "начать тест" чтобы сразу начать.'
+    )
+      .setButtons([
+        { title: "О навыке", hide: true },
+        { title: "Начать тест", hide: true }
+      ])
+      .build();
+  }
 
   // Обработчик "Что ты умеешь"
   @Intent('YANDEX.WHAT_CAN_YOU_DO')
