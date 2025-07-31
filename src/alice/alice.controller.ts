@@ -810,8 +810,7 @@ export class AliceController {
       .addItem(items[1])
       .addItem(items[2])
       .setFooter(
-        "Результаты показывают ваши доминирующие ценности",
-        { title: "Получить полный отчет", hide: false }
+        "Результаты показывают ваши доминирующие ценности"
       )
       .build();
   }
