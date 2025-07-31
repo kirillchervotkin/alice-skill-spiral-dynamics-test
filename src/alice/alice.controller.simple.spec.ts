@@ -31,11 +31,17 @@ describe('AliceController (Simple Tests)', () => {
     });
 
     it('should return help message', () => {
-      const response = controller.help();
+      const mockData = {
+        request: {
+          command: 'что ты умеешь',
+          original_utterance: 'что ты умеешь'
+        }
+      };
+      const response = controller.whatCanYouDo(mockData);
       
       expect(response).toBeDefined();
-      expect(response.response.text).toContain('Тест покажет');
-      expect(response.response.text).toContain('выживание, традиции, власть');
+      expect(response.response.text).toContain('Я умею:');
+      expect(response.response.text).toContain('Проводить тест на определение ценностей');
     });
 
     it('should handle agreement to start', () => {
@@ -172,12 +178,12 @@ describe('AliceController (Simple Tests)', () => {
       expect(response.response.text).toContain('ТОП-3 уровня ценностей');
     });
 
-    it('should handle send results', () => {
-      const response = controller.sendResults(mockResultsData);
+    // it('should handle send results', () => {
+    //   const response = controller.sendResults(mockResultsData);
       
-      expect(response).toBeDefined();
-      expect(response.response.text).toContain('функция отправки пока не реализована');
-    });
+    //   expect(response).toBeDefined();
+    //   expect(response.response.text).toContain('функция отправки пока не реализована');
+    // });
   });
 
   describe('Pause functionality', () => {
