@@ -218,7 +218,7 @@ export class AliceController {
       )
         .setButtons([
           { title: "Пройти тест", hide: true },
-          { title: "Позже", hide: true }
+          { title: "Выход", hide: true }
         ])
         .build();
       
