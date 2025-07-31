@@ -178,12 +178,12 @@ describe('AliceController (Simple Tests)', () => {
       expect(response.response.text).toContain('ТОП-3 уровня ценностей');
     });
 
-    // it('should handle send results', () => {
-    //   const response = controller.sendResults(mockResultsData);
-      
-    //   expect(response).toBeDefined();
-    //   expect(response.response.text).toContain('функция отправки пока не реализована');
-    // });
+      // it('should handle send results', () => {
+  //   const response = controller.sendResults(mockResultsData);
+  //   
+  //   expect(response).toBeDefined();
+  //   expect(response.response.text).toContain('функция отправки пока не реализована');
+  // });
   });
 
   describe('Pause functionality', () => {
