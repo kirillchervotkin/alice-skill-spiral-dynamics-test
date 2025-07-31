@@ -332,6 +332,19 @@ export class AliceController {
       return this.processAnswerWithScore(data, 2);
     }
 
+    // Если в состоянии результатов, "Да" не имеет смысла
+    if (state === 'results') {
+      console.log(`⚠️ YES not applicable in results state`);
+      return new SkillResponseBuilder('В результатах скажи "Подробнее", "Повтори результаты" или "Заново".')
+        .setButtons([
+          { title: "Подробнее", hide: false },
+          { title: "Повтори результаты", hide: false },
+          { title: "Заново", hide: false }
+        ])
+        .setData(data)
+        .build();
+    }
+
     // Если данные полностью пустые (первый запуск), считаем это согласием начать тест
     if (!state && !data.currentQuestion && !data.answers) {
       console.log(`✅ Empty data - starting test`);
@@ -368,6 +381,19 @@ export class AliceController {
       return this.processAnswerWithScore(data, 0);
     }
 
+    // Если в состоянии результатов, "Нет" не имеет смысла
+    if (state === 'results') {
+      console.log(`⚠️ NO not applicable in results state`);
+      return new SkillResponseBuilder('В результатах скажи "Подробнее", "Повтори результаты" или "Заново".')
+        .setButtons([
+          { title: "Подробнее", hide: false },
+          { title: "Повтори результаты", hide: false },
+          { title: "Заново", hide: false }
+        ])
+        .setData(data)
+        .build();
+    }
+
     // Если данные полностью пустые (первый запуск), считаем это отказом от теста
     if (!state && !data.currentQuestion && !data.answers) {
       console.log(`✅ Empty data - exiting skill`);
@@ -398,6 +424,19 @@ export class AliceController {
       return this.processAnswerWithScore(data, 1);
     }
 
+    // Если в состоянии результатов, "Не уверен" не имеет смысла
+    if (state === 'results') {
+      console.log(`⚠️ UNSURE not applicable in results state`);
+      return new SkillResponseBuilder('В результатах скажи "Подробнее", "Повтори результаты" или "Заново".')
+        .setButtons([
+          { title: "Подробнее", hide: false },
+          { title: "Повтори результаты", hide: false },
+          { title: "Заново", hide: false }
+        ])
+        .setData(data)
+        .build();
+    }
+
     console.log(`❌ Unhandled case - showing error`);
     return this.handleError(data);
   }
@@ -407,6 +446,14 @@ export class AliceController {
   repeatQuestion(@Data() data: any): AliceResponse {
     console.log(`⏱️ REPEAT START`);
     console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
+
+    const { state } = data;
+
+    // Если в состоянии результатов, повторяем результаты, а не вопрос
+    if (state === 'results') {
+      console.log(`✅ Results state - calling repeatResults`);
+      return this.repeatResults(data);
+    }
 
     const { currentQuestion = 1 } = data;
     const question = this.questionsService.getQuestion(currentQuestion);

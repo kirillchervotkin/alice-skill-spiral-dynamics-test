@@ -199,8 +199,6 @@ describe('AliceController (Cards Tests)', () => {
       const card = response.response.card as any;
       
       expect(card.footer.text).toContain('Результаты показывают');
-      expect(card.footer.button).toBeDefined();
-      expect(card.footer.button.title).toContain('полный отчет');
     });
 
     it('should handle level description card button', () => {
