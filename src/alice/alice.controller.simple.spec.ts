@@ -240,4 +240,202 @@ describe('AliceController (Simple Tests)', () => {
       expect(response.response.text).toContain('Извини, не поняла');
     });
   });
+
+  describe('Unknown command handling', () => {
+    it('should handle unknown command in welcome state', () => {
+      const mockUnknownData = {
+        request: {
+          command: 'блаблабла',
+          original_utterance: 'блаблабла'
+        },
+        session: {},
+        state: 'welcome' as const
+      };
+      
+      const response = controller.defaultHandler(mockUnknownData);
+      
+      expect(response).toBeDefined();
+      expect(response.response.text).toContain('Не понял команду "блаблабла"');
+      expect(response.response.text).toContain('начать тест');
+      expect(response.response.buttons).toBeDefined();
+      expect(response.response.buttons?.some(btn => btn.title === 'О навыке')).toBe(true);
+    });
+
+    it('should handle unknown command in testing state', () => {
+      const mockUnknownData = {
+        request: {
+          command: 'nonsense',
+          original_utterance: 'nonsense'
+        },
+        session: {},
+        currentQuestion: 5,
+        answers: [],
+        state: 'testing' as const
+      };
+      
+      const response = controller.defaultHandler(mockUnknownData);
+      
+      expect(response).toBeDefined();
+      expect(response.response.text).toContain('Не понял ответ "nonsense"');
+      expect(response.response.text).toContain('ДА, НЕТ или НЕ УВЕРЕН');
+      expect(response.response.text).toContain('Вопрос 5 из 24');
+      expect(response.response.buttons?.some(btn => btn.title === 'Да')).toBe(true);
+    });
+
+    it('should handle unknown command in results state', () => {
+      const mockUnknownData = {
+        request: {
+          command: 'xyz',
+          original_utterance: 'xyz'  
+        },
+        session: {},
+        results: { top3: [], allScores: {} },
+        state: 'results' as const
+      };
+      
+      const response = controller.defaultHandler(mockUnknownData);
+      
+      expect(response).toBeDefined();
+      expect(response.response.text).toContain('Не понял команду "xyz"');
+      expect(response.response.text).toContain('Подробнее');
+      expect(response.response.buttons?.some(btn => btn.title === 'Подробнее')).toBe(true);
+    });
+
+    it('should handle unknown command in paused state', () => {
+      const mockUnknownData = {
+        request: {
+          command: 'random',
+          original_utterance: 'random'
+        },
+        session: {},
+        currentQuestion: 10,
+        answers: [],
+        state: 'paused' as const
+      };
+      
+      const response = controller.defaultHandler(mockUnknownData);
+      
+      expect(response).toBeDefined();
+      expect(response.response.text).toContain('Не понял команду "random"');
+      expect(response.response.text).toContain('Тест на паузе');
+      expect(response.response.buttons?.some(btn => btn.title === 'Продолжить')).toBe(true);
+    });
+
+    it('should handle "пон" command in welcome state', () => {
+      const mockPonData = {
+        request: {
+          command: 'пон',
+          original_utterance: 'пон'
+        },
+        session: {},
+        state: 'welcome' as const
+      };
+      
+      const response = controller.defaultHandler(mockPonData);
+      
+      expect(response).toBeDefined();
+      expect(response.response.text).toContain('Не понял команду "пон"');
+      expect(response.response.text).toContain('начать тест');
+      expect(response.response.buttons).toBeDefined();
+      expect(response.response.buttons?.length).toBeGreaterThan(0);
+    });
+
+    it('should handle "пон" in Yandex Dialogs format', () => {
+      const mockYandexData = {
+        meta: {
+          locale: "ru-RU",
+          timezone: "UTC",
+          client_id: "test"
+        },
+        session: {
+          message_id: 1,
+          session_id: "test-session",
+          skill_id: "test-skill",
+          user: { user_id: "test-user" },
+          new: false
+        },
+        request: {
+          command: 'пон',
+          original_utterance: 'пон',
+          nlu: {
+            tokens: ['пон'],
+            entities: [],
+            intents: {}
+          },
+          type: "SimpleUtterance"
+        },
+        state: {
+          session: {
+            data: {
+              state: 'welcome'
+            }
+          }
+        },
+        version: "1.0"
+      };
+      
+      const response = controller.defaultHandler(mockYandexData);
+      
+      expect(response).toBeDefined();
+      expect(response.response.text).toContain('Не понял команду "пон"');
+      expect(response.response.text).toContain('начать тест');
+    });
+  });
+
+  describe('Unknown commands via intent', () => {
+    it('should handle "пон" via unknown intent in welcome state', () => {
+      const mockUnknownData = {
+        request: {
+          command: 'пон',
+          original_utterance: 'пон'
+        },
+        session: {},
+        state: 'welcome' as const
+      };
+      
+      const response = controller.handleUnknownIntent(mockUnknownData);
+      
+      expect(response).toBeDefined();
+      expect(response.response.text).toContain('Готов узнать свои ценности');
+      expect(response.response.text).toContain('начать тест');
+      expect(response.response.buttons?.some(btn => btn.title === 'Начать тест')).toBe(true);
+    });
+
+    it('should handle unknown command during testing', () => {
+      const mockUnknownData = {
+        request: {
+          command: 'блабла',
+          original_utterance: 'блабла'
+        },
+        session: {},
+        currentQuestion: 5,
+        answers: [],
+        state: 'testing' as const
+      };
+      
+      const response = controller.handleUnknownIntent(mockUnknownData);
+      
+      expect(response).toBeDefined();
+      expect(response.response.text).toContain('Отвечай на вопрос: ДА, НЕТ или НЕ УВЕРЕН');
+      expect(response.response.text).toContain('Вопрос 5 из 24');
+    });
+
+    it('should handle unknown command in results state', () => {
+      const mockUnknownData = {
+        request: {
+          command: 'хрень',
+          original_utterance: 'хрень'
+        },
+        session: {},
+        results: { top3: [], allScores: {} },
+        state: 'results' as const
+      };
+      
+      const response = controller.handleUnknownIntent(mockUnknownData);
+      
+      expect(response).toBeDefined();
+      expect(response.response.text).toContain('Выбери что хочешь');
+      expect(response.response.buttons?.some(btn => btn.title === 'Подробнее')).toBe(true);
+    });
+  });
 });

@@ -25,6 +25,7 @@ export { spiralRestart, tests as spiralRestartTests } from './spiral.restart';
 export { spiralStart, tests as spiralStartTests } from './spiral.start';
 export { spiralNo, tests as spiralNoTests } from './spiral.no';
 export { spiralYes, tests as spiralYesTests } from './spiral.yes';
+export { spiralUnknown, tests as spiralUnknownTests } from './spiral.unknown';
 
 // Список всех интентов
 export const ALL_INTENTS = [
@@ -52,5 +53,6 @@ export const ALL_INTENTS = [
   'spiral.restart',
   'spiral.start',
   'spiral.no',
-  'spiral.yes'
+  'spiral.yes',
+  'spiral.unknown'
 ];

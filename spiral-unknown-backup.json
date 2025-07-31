@@ -1,0 +1,23 @@
+{
+    "name": "spiral.unknown", 
+    "description": "Обработка любых неизвестных команд (вариант со встроенными слотами)",
+    "grammar": "root:\n  $word+ |\n  $text |\n  $any\n\nslots:\n  word:\n    source: YANDEX.FIO | YANDEX.WORD\n  text:\n    source: YANDEX.STRING\n  any:\n    source: YANDEX.TEXT",
+    "positiveTests": [
+        "пон",
+        "блабла", 
+        "хрень",
+        "любое слово",
+        "фраза из слов",
+        "123456",
+        "english words"
+    ],
+    "negativeTests": [
+        "да",
+        "нет", 
+        "помощь",
+        "начать тест",
+        "выход"
+    ],
+    "priority": 1,
+    "comment": "Использует встроенные слоты Яндекса для универсального перехвата"
+}

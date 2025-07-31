@@ -45,10 +45,10 @@ export function spiralAbout(_context: any, matches: RegExpMatchArray): AliceResp
         '📈 Объясняю результаты с баллами\n' +
         '⏸️ Позволяю ставить тест на паузу\n' +
         '🔄 Могу повторить вопрос или результаты\n\n' +
-        'Готовы начать тест? Скажите "Да" или "Начать тест".'
+        'Готовы начать тест? Скажите "Да" или "Нет".'
     )
       .setButtons([
-        { title: "Начать тест", hide: true },
+        { title: "Да", hide: true },
         { title: "Нет, спасибо", hide: true }
       ])
       .build();

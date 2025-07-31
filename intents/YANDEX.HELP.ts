@@ -36,12 +36,10 @@ export function yandexHelp(_context: any, matches: RegExpMatchArray): AliceRespo
     // Для всех запросов помощи - краткий ответ
     return new SkillResponseBuilder(
         'Привет! Я помогу разобраться с навыком. ' +
-        'Чтобы узнать подробности о навыке, скажите "о навыке". ' +
-        'Чтобы начать тест, скажите "начать тест".'
+        'Чтобы узнать подробности о навыке, скажите "о навыке".'
     )
       .setButtons([
-        { title: "О навыке", hide: true },
-        { title: "Начать тест", hide: true }
+        { title: "О навыке", hide: true }
       ])
       .build();
 }

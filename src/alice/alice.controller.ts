@@ -119,11 +119,10 @@ export class AliceController {
           console.log(`🎯 General help - returning brief response`);
           return new SkillResponseBuilder(
             'Привет! Я помогу определить ваши ценности. ' +
-            'Скажите "о навыке" для подробной информации или "начать тест" чтобы сразу начать.'
+            'Скажите "о навыке" для подробной информации.'
           )
             .setButtons([
-              { title: "О навыке", hide: true },
-              { title: "Начать тест", hide: true }
+              { title: "О навыке", hide: true }
             ])
             .build();
         }
@@ -135,22 +134,187 @@ export class AliceController {
       //   return this.about();
       // }
       
-      console.log(`🔄 No patterns matched, returning startWelcome()`);
-      const welcomeResult = this.startWelcome();
-      console.log(`✅ startWelcome() result:`, JSON.stringify(welcomeResult, null, 2));
-      return welcomeResult;
+      console.log(`🔄 No patterns matched - checking current state and handling unknown command`);
+      return this.handleUnknownCommand(data);
     
     } catch (error) {
       console.error(`❌ Error in defaultHandler:`, error);
       console.error(`❌ Error stack:`, error instanceof Error ? error.stack : 'Unknown error');
-      const errorResponse = new SkillResponseBuilder('Извините, произошла ошибка. Скажите "начать тест" для начала.')
+      const errorResponse = new SkillResponseBuilder('Извините, произошла ошибка. Скажите "о навыке" для справки.')
         .setButtons([
-          { title: "Начать тест", hide: true }
+          { title: "О навыке", hide: true }
         ])
         .build();
       console.log(`✅ Error response in catch:`, JSON.stringify(errorResponse, null, 2));
       return errorResponse;
     }
+  }
+
+  // Обработка любых неизвестных команд через интент  
+  @Intent('spiral.unknown')
+  handleUnknownIntent(@Data() data: any): AliceResponse {
+    console.log(`🎯 UNKNOWN INTENT START`);
+    console.log(`📊 Session data:`, JSON.stringify(data, null, 2));
+
+    const { state } = data;
+    const command = data?.request?.original_utterance || data?.request?.command || '';
+    
+    console.log(`🔍 Handling unknown command via intent: "${command}" in state: ${state}`);
+
+    // В зависимости от состояния даем подходящий ответ
+    if (!state || state === 'welcome') {
+      return new SkillResponseBuilder(
+        'Извините, ваше слово мне не понятно. Привет! Готов узнать свои ценности? Скажи "о навыке".'
+      )
+        .setButtons([
+          { title: "О навыке", hide: true }
+        ])
+        .setData(data)
+        .build();
+    }
+
+    if (state === 'testing') {
+      const { currentQuestion = 1 } = data;
+      const question = this.questionsService.getQuestion(currentQuestion);
+      
+      return new SkillResponseBuilder(
+        `Извините, не понимаю эту команду. Пожалуйста, отвечайте на вопрос: ДА, НЕТ или НЕ УВЕРЕН.\n\n` +
+        `Вопрос ${currentQuestion} из 24: ${question?.text || 'Ошибка загрузки вопроса'}`
+      )
+        .setButtons([
+          { title: "Да", hide: true },
+          { title: "Нет", hide: true },
+          { title: "Не уверен", hide: true },
+          { title: "Повтори", hide: false }
+        ])
+        .setData(data)
+        .build();
+    }
+
+    if (state === 'results') {
+      return new SkillResponseBuilder(
+        'Ваша команда не распознана. Пожалуйста, выберите: подробнее о результатах, повтори результаты или начать заново.'
+      )
+        .setButtons([
+          { title: "Подробнее", hide: false },
+          { title: "Повтори результаты", hide: false },
+          { title: "Заново", hide: false }
+        ])
+        .setData(data)
+        .build();
+    }
+
+    if (state === 'paused') {
+      return new SkillResponseBuilder(
+        'Извините, команда не понята. Тест на паузе. Что будем делать?'
+      )
+        .setButtons([
+          { title: "Продолжить", hide: false },
+          { title: "Заново", hide: false },
+          { title: "Выход", hide: false }
+        ])
+        .setData(data)
+        .build();
+    }
+
+    // Fallback
+    return this.handleError(data);
+  }
+
+  // Обработка неизвестных команд в зависимости от состояния
+  private handleUnknownCommand(data: any): AliceResponse {
+    // Правильно извлекаем состояние из Яндекс.Диалогов формата
+    const sessionData = data?.state?.session?.data || data || {};
+    const { state, currentQuestion } = sessionData;
+    const command = data?.request?.original_utterance || data?.request?.command || '';
+    
+    console.log(`🔍 Handling unknown command: "${command}" in state: ${state}`);
+
+    // В состоянии приветствия
+    if (!state || state === 'welcome') {
+      console.log(`✅ Welcome state - offering help`);
+      return new SkillResponseBuilder(
+        `Извините, ваша команда "${command}" мне не понятна. ` +
+        'Пожалуйста, скажите "о навыке" чтобы узнать больше.'
+      )
+        .setButtons([
+          { title: "О навыке", hide: true }
+        ])
+        .setData(sessionData)
+        .build();
+    }
+
+    // Во время тестирования
+    if (state === 'testing') {
+      try {
+        const question = this.questionsService.getQuestion(currentQuestion || 1);
+        console.log(`✅ Testing state - explaining how to answer`);
+        return new SkillResponseBuilder(
+          `Не понял ответ "${command}". ` +
+          'Отвечай только: ДА, НЕТ или НЕ УВЕРЕН. ' +
+          `\n\nВопрос ${currentQuestion || 1} из 24: ${question?.text || 'Ошибка загрузки вопроса'}`
+        )
+          .setButtons([
+            { title: "Да", hide: true },
+            { title: "Нет", hide: true },
+            { title: "Не уверен", hide: true },
+            { title: "Пауза", hide: false }
+          ])
+          .setData(data)
+          .build();
+      } catch (error) {
+        console.error(`❌ Error getting question in handleUnknownCommand:`, error);
+        return new SkillResponseBuilder(
+          `Не понял ответ "${command}". ` +
+          'Отвечай только: ДА, НЕТ или НЕ УВЕРЕН.'
+        )
+          .setButtons([
+            { title: "Да", hide: true },
+            { title: "Нет", hide: true },
+            { title: "Не уверен", hide: true },
+            { title: "Пауза", hide: false }
+          ])
+          .setData(data)
+          .build();
+      }
+    }
+
+    // В результатах
+    if (state === 'results') {
+      console.log(`✅ Results state - showing available commands`);
+      return new SkillResponseBuilder(
+        `Ваша команда "${command}" не распознана. ` +
+        'Пожалуйста, выберите из доступных команд: "Подробнее", "Повтори результаты", "Заново", "Опиши [цвет]".'
+      )
+        .setButtons([
+          { title: "Подробнее", hide: false },
+          { title: "Повтори результаты", hide: false },
+          { title: "Заново", hide: false },
+          { title: "Выход", hide: false }
+        ])
+        .setData(sessionData)
+        .build();
+    }
+
+    // На паузе
+    if (state === 'paused') {
+      console.log(`✅ Paused state - offering to continue`);
+      return new SkillResponseBuilder(
+        `Извините, команда "${command}" мне не понятна. ` +
+        'Тест на паузе. Пожалуйста, скажите "Продолжить" чтобы продолжить тест, или "Заново" чтобы начать сначала.'
+      )
+        .setButtons([
+          { title: "Продолжить", hide: true },
+          { title: "Заново", hide: false },
+          { title: "Выход", hide: false }
+        ])
+        .setData(sessionData)
+        .build();
+    }
+
+    // Неизвестное состояние - показываем приветствие
+    console.log(`⚠️ Unknown state: ${state} - returning welcome`);
+    return this.startWelcome();
   }
   
   // Проверка, является ли команда запросом о навыке (только fallback паттерны)
@@ -171,11 +335,10 @@ export class AliceController {
     
     return new SkillResponseBuilder(
       'Привет! Я помогу определить ваши ценности. ' +
-      'Скажите "о навыке" для подробной информации или "начать тест" чтобы сразу начать.'
+      'Скажите "о навыке" для подробной информации.'
     )
       .setButtons([
-        { title: "О навыке", hide: true },
-        { title: "Начать тест", hide: true }
+        { title: "О навыке", hide: true }
       ])
       .setData(data)
       .build();
@@ -196,7 +359,7 @@ export class AliceController {
       'Хотите начать тест?'
     )
       .setButtons([
-        { title: "Начать тест", hide: true },
+        { title: "Да", hide: true },
         { title: "О навыке", hide: true }
       ])
       .build();
@@ -217,7 +380,7 @@ export class AliceController {
         'Хотите пройти тест?'
       )
         .setButtons([
-          { title: "Пройти тест", hide: true },
+          { title: "Да", hide: true },
           { title: "Выход", hide: true }
         ])
         .build();
@@ -238,7 +401,7 @@ export class AliceController {
   // Начало теста
   @Intent('spiral.start')
   startTest(): AliceResponse {
-    return this.startWelcome();
+    return this.startFirstQuestion();
   }
 
   // Согласие начать тест (только в приветствии)
@@ -716,16 +879,16 @@ export class AliceController {
     }
 
     return new SkillResponseBuilder(
-      'Извини, не поняла. Попробуй сказать по-другому или скажи "Помощь".'
+      'Извини, не поняла. Попробуй сказать по-другому.'
     )
-      .setButtons([{ title: "Помощь", hide: false }])
+      .setButtons([{ title: "О навыке", hide: true }])
       .setData(data)
       .build();
   }
 
   // Приватные методы
   private startWelcome(): AliceResponse {
-    const helpButton: Button = { title: "Помощь", hide: false };
+    const aboutButton: Button = { title: "О навыке", hide: true };
     const startButton: Button = { title: "Да", hide: true };
     const noButton: Button = { title: "Нет", hide: true };
 
@@ -735,7 +898,7 @@ export class AliceController {
       'Ответь на 24 утверждения: Да (согласен), Нет (не согласен) или Не уверен (нейтрален). ' +
       'Отвечай интуитивно, первое, что приходит в голову. Готов начать?'
     )
-      .setButtons([startButton, noButton, helpButton])
+      .setButtons([startButton, noButton, aboutButton])
       .setData({ state: 'welcome' })
       .build();
   }

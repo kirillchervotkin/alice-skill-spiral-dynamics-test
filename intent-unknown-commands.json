@@ -1,0 +1,23 @@
+{
+    "name": "spiral.unknown",
+    "description": "Обработка неизвестных команд",
+    "grammar": "root:\n  $word+ |\n  $any_word+ |\n  неизвестная команда\n\nslots:\n  word:\n    source: [а-яё\\w]+\n  any_word:\n    source: .+",
+    "positiveTests": [
+        "пон",
+        "блабла", 
+        "какая-то фигня",
+        "хрень",
+        "ерунда",
+        "что это",
+        "не понимаю",
+        "странная команда"
+    ],
+    "negativeTests": [
+        "да",
+        "нет", 
+        "помощь",
+        "начать тест",
+        "выход"
+    ],
+    "priority": 1
+}
