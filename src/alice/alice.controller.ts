@@ -177,6 +177,7 @@ export class AliceController {
         { title: "О навыке", hide: true },
         { title: "Начать тест", hide: true }
       ])
+      .setData(data)
       .build();
   }
 
